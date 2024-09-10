@@ -157,3 +157,103 @@ GraphicColor::HSV::HSV(RGB& rgb) {
 RGB GraphicColor::HSV::to_RGB() const {
 	return HSVtoRGB(*this);
 }
+
+DH_Matrix Calculate::DH_Parameters(Vector3D angle, double distance, DH_Matrix prev_matrix, bool is_first) {
+	// Denavit-Hartenberg Matrix Calculation Functiuon (Lambda)
+	auto Tz_Generator = [](double d_i) -> DH_Matrix {
+		DH_Matrix Tz;
+		Tz << 1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, d_i,
+			0, 0, 0, 1;
+		return Tz;
+		};
+
+	auto Rz_Generator = [](double theta_i) -> DH_Matrix {
+		DH_Matrix Rz;
+		Rz << cos(theta_i), -sin(theta_i), 0, 0,
+			sin(theta_i), cos(theta_i), 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1;
+		return Rz;
+		};
+
+	auto Tx_Generator = [](double a_i) -> DH_Matrix {
+		DH_Matrix Tx;
+		Tx << 1, 0, 0, a_i,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1;
+		return Tx;
+		};
+
+	auto Rx_Generator = [](double alpha_i) -> DH_Matrix {
+		DH_Matrix Rx;
+		Rx << 1, 0, 0, 0,
+			0, cos(alpha_i), -sin(alpha_i), 0,
+			0, sin(alpha_i), cos(alpha_i), 0,
+			0, 0, 0, 1;
+		return Rx;
+		};
+
+	// Calculating
+	DH_Matrix Tz, Rz, Tx, Rx;
+	double d_i, theta_i, a_i, alpha_i;
+
+	d_i = 0;
+	theta_i = angle.x;
+	a_i = 0;
+	if (is_first) alpha_i = 0;
+	else alpha_i = Constant::PI * 0.5;
+
+	Tz = Tz_Generator(d_i);
+	Rz = Rz_Generator(theta_i);
+	Tx = Tx_Generator(a_i);
+	Rx = Rx_Generator(alpha_i);
+
+	DH_Matrix M_x = Tz * Rz * Tx * Rx;
+
+	d_i = 0;
+	theta_i = angle.z;
+	a_i = distance;
+	alpha_i = -Constant::PI * 0.5 + angle.y;
+
+	Tz = Tz_Generator(d_i);
+	Rz = Rz_Generator(theta_i);
+	Tx = Tx_Generator(a_i);
+	Rx = Rx_Generator(alpha_i);
+
+	DH_Matrix M_z = Tz * Rz * Tx * Rx;
+
+	DH_Matrix dh_matrix = prev_matrix * M_x * M_z;
+
+	return dh_matrix;
+}
+
+Vector3D Calculate::DHMatrixToPosition(DH_Matrix dh_matrix) {
+	Vector3D position;
+	position.x = dh_matrix(0, 3);
+	position.y = dh_matrix(1, 3);
+	position.z = dh_matrix(2, 3);
+
+	return position;
+}
+
+Eigen::Matrix3d Calculate::RotationMatrix(Vector3D orientation) {
+	Eigen::Matrix3d rotation_matrix;
+	rotation_matrix =
+		Eigen::AngleAxisd(orientation.x, Eigen::Vector3d::UnitX())
+		* Eigen::AngleAxisd(orientation.y, Eigen::Vector3d::UnitY())
+		* Eigen::AngleAxisd(orientation.z, Eigen::Vector3d::UnitZ());
+	return rotation_matrix;
+}
+
+Vector3D Calculate::Rotate(Vector3D point, Eigen::Matrix3d rotation_matrix) {
+	Eigen::Vector3d original_vector(point.x, point.y, point.z);
+	Eigen::Vector3d rotated_vector = original_vector.transpose() * rotation_matrix;
+	point.x = rotated_vector.x();
+	point.y = rotated_vector.y();
+	point.z = rotated_vector.z();
+	return point;
+}
+

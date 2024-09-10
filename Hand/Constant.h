@@ -1,4 +1,5 @@
 #pragma once
+#include <Eigen/Dense>
 
 namespace GraphicColor {
 
@@ -41,6 +42,8 @@ namespace GraphicColor {
 	const GraphicColor::RGB JOINT_COLOR_RGB = JOINT_COLOR.to_RGB();
 	const GraphicColor::HSV FALSE_COLOR(0, 0, 30);
 	const GraphicColor::RGB FALSE_COLOR_RGB = FALSE_COLOR.to_RGB();
+	const GraphicColor::HSV MUSCLE_COLOR(0, 50, 100);
+	const GraphicColor::RGB MUSCLE_COLOR_RGB = MUSCLE_COLOR.to_RGB();
 }
 
 class Constant {
@@ -60,4 +63,27 @@ public:
 	constexpr static double PI = 3.14159265358979323846;
 	constexpr static double RAD(double deg) { return deg * PI / 180; }
 	constexpr static double DEG(double rad) { return rad * 180 / PI; }
+};
+
+class Vector3D {
+public:
+	Vector3D() : x(0), y(0), z(0) {}
+	Vector3D(double x, double y, double z) : x(x), y(y), z(z) {}
+	Vector3D(const Vector3D& vec) : x(vec.x), y(vec.y), z(vec.z) {}
+
+	double x;
+	double y;
+	double z;
+};
+
+using DH_Matrix = Eigen::Matrix<double, 4, 4>;
+const DH_Matrix EMPTY_MAT = Eigen::Matrix<double, 4, 4>::Identity();
+
+class Calculate {
+public:
+	static DH_Matrix DH_Parameters(Vector3D angle, double distance, DH_Matrix prev_matrix, bool is_first);
+	static Vector3D DHMatrixToPosition(DH_Matrix dh_matrix);
+
+	static Eigen::Matrix3d RotationMatrix(Vector3D orientation);
+	static Vector3D Rotate(Vector3D point, Eigen::Matrix3d rotation_matrix);
 };

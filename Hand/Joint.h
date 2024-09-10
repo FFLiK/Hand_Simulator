@@ -20,6 +20,7 @@
 #define SDL_H
 #endif
 
+
 enum class JointType {
 	NONE, PRIMARY, SECONDARY, TIRTARY
 };
@@ -28,23 +29,23 @@ enum class JointFlag {
 	REAL_JOINT = 0, VIRTUAL_JOINT = 1, END_EFFECTOR = 2
 };
 
-using DH_Matrix = Eigen::Matrix<double, 4, 4>;
-const DH_Matrix EMPTY_MAT = Eigen::Matrix<double, 4, 4>::Identity();
-
 template<JointType type = JointType::NONE>
 class Joint {
 protected:
 	JointType TYPE = JointType::NONE;
 
-	struct Rotation { double x, y, z; };
-	struct Position { double x, y, z; };
+	// Initial Value
+	Vector3D initial_angle;
 
 	// Input
 	double distance;
-	Rotation rotation;
+	Vector3D rotation;
 
 	// Output
-	Position position;
+	Vector3D position;
+
+	// Force
+	Vector3D force;
 
 	DH_Matrix dh_matrix; // Denavit-Hartenberg matrix, M = Tz * Rz * Tx * Rx
 	
@@ -67,10 +68,11 @@ public:
 	Joint(double distance, Joint* parent = nullptr);
 	~Joint();
 	
-	void Calculate();
+	void Compute();
 	void GetPosition(double& x, double& y, double& z);
 	Joint<>* SetPosition(double x, double y, double z);
 	Joint<>* GetParentJoint();
+	Joint<>* GetAngle(double& x_rot, double& y_rot, double& z_rot);
 	Joint<>* InitAngle(double x_rot, double y_rot, double z_rot);
 	Joint<>* SetRangeX(double min, double max);
 	Joint<>* SetRangeY(double min, double max);
@@ -78,13 +80,16 @@ public:
 	Joint<>* SetFlag(JointFlag flag);
 	void SetAngle(double x_rot, double y_rot, double z_rot);
 	void SetAngleAsProgress(double x_rot, double y_rot, double z_rot);
+	void SetForce(double x, double y, double z);
+
+	DH_Matrix GetDHMatrix();
 
 	JointType Type() const;
 
 	bool IsRealJoint();
 	bool IsEndEffector();
 
-	static void NewCalculation();
+	static void NewComputation();
 
 	friend class Joint<JointType::PRIMARY>;
 	friend class Joint<JointType::SECONDARY>;
@@ -104,15 +109,6 @@ public:
 	void SetAngleAsProgress(double x_rot) {
 		this->rotation.x = this->range_x_min + (this->range_x_max - this->range_x_min) * x_rot;
 	}
-	Joint<JointType::PRIMARY>* InitAngle(double x_rot, double y_rot, double z_rot) {
-		this->rotation.x += Constant::RAD(x_rot);
-		this->rotation.y += Constant::RAD(y_rot);
-		this->rotation.z += Constant::RAD(z_rot);
-		this->SetRangeX(0, 0);
-		this->SetRangeY(0, 0);
-		this->SetRangeZ(0, 0);
-		return this;
-	}
 };
 
 template<>
@@ -129,15 +125,6 @@ public:
 	void SetAngleAsProgress(double x_rot, double z_rot) {
 		this->rotation.x = this->range_x_min + (this->range_x_max - this->range_x_min) * x_rot;
 		this->rotation.z = this->range_z_min + (this->range_z_max - this->range_z_min) * z_rot;
-	}
-	Joint<JointType::SECONDARY>* InitAngle(double x_rot, double y_rot, double z_rot) {
-		this->rotation.x += Constant::RAD(x_rot);
-		this->rotation.y += Constant::RAD(y_rot);
-		this->rotation.z += Constant::RAD(z_rot);
-		this->SetRangeX(0, 0);
-		this->SetRangeY(0, 0);
-		this->SetRangeZ(0, 0);
-		return this;
 	}
 };
 
@@ -157,15 +144,6 @@ public:
 		this->rotation.x = this->range_x_min + (this->range_x_max - this->range_x_min) * x_rot;
 		this->rotation.y = this->range_y_min + (this->range_y_max - this->range_y_min) * y_rot;
 		this->rotation.z = this->range_z_min + (this->range_z_max - this->range_z_min) * z_rot;
-	}
-	Joint<JointType::TIRTARY>* InitAngle(double x_rot, double y_rot, double z_rot) {
-		this->rotation.x += Constant::RAD(x_rot);
-		this->rotation.y += Constant::RAD(y_rot);
-		this->rotation.z += Constant::RAD(z_rot);
-		this->SetRangeX(0, 0);
-		this->SetRangeY(0, 0);
-		this->SetRangeZ(0, 0);
-		return this;
 	}
 };
 
@@ -209,91 +187,39 @@ Joint<T>::~Joint() {
 }
 
 template<JointType T>
-void Joint<T>::Calculate() {
+void Joint<T>::Compute() {
+	// Force Update
+	double FORCE_AMPLIFICATION_FACTOR = 5.0;
+	this->force.x *= FORCE_AMPLIFICATION_FACTOR;
+	this->force.y *= FORCE_AMPLIFICATION_FACTOR;
+	this->force.z *= FORCE_AMPLIFICATION_FACTOR;
+
+	double x_delta = (Constant::DEG(this->initial_angle.x) - Constant::DEG(this->rotation.x)) / 360;
+	double y_delta = (Constant::DEG(this->initial_angle.y) - Constant::DEG(this->rotation.y)) / 360;
+	double z_delta = (Constant::DEG(this->initial_angle.z) - Constant::DEG(this->rotation.z)) / 360;
+	
+	this->force.x += x_delta;
+	this->force.y += y_delta;
+	this->force.z += z_delta;
+
+	this->SetAngle(this->force.x, this->force.y, this->force.z);
+	this->force = { 0, 0, 0 };
+
 	if (this->update_seed != Joint::current_update_seed) {
 		// Parent Calculation
 		DH_Matrix parent_matrix;
 		if (this->parent_joint) {
-			this->parent_joint->Calculate();
+			this->parent_joint->Compute();
 			parent_matrix = this->parent_joint->dh_matrix;
 		}
 		else {
 			parent_matrix = EMPTY_MAT;
 		}
 
-		// Denavit-Hartenberg Matrix Calculation Functiuon (Lambda)
-		auto Tz_Generator = [](double d_i) -> DH_Matrix {
-			DH_Matrix Tz;
-			Tz << 1, 0, 0, 0,
-				0, 1, 0, 0,
-				0, 0, 1, d_i,
-				0, 0, 0, 1;
-			return Tz;
-		};
+		// Calculate DH Matrix
+		this->dh_matrix = Calculate::DH_Parameters(this->rotation, this->distance, parent_matrix, !this->parent_joint);
 
-		auto Rz_Generator = [](double theta_i) -> DH_Matrix {
-			DH_Matrix Rz;
-			Rz << cos(theta_i), -sin(theta_i), 0, 0,
-				sin(theta_i), cos(theta_i), 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1;
-			return Rz;
-		};
-
-		auto Tx_Generator = [](double a_i) -> DH_Matrix {
-			DH_Matrix Tx;
-			Tx << 1, 0, 0, a_i,
-				0, 1, 0, 0,
-				0, 0, 1, 0,
-				0, 0, 0, 1;
-			return Tx;
-		};
-
-		auto Rx_Generator = [](double alpha_i) -> DH_Matrix {
-			DH_Matrix Rx;
-			Rx << 1, 0, 0, 0,
-				0, cos(alpha_i), -sin(alpha_i), 0,
-				0, sin(alpha_i), cos(alpha_i), 0,
-				0, 0, 0, 1;
-			return Rx;
-		};
-
-		// Calculating
-		DH_Matrix Tz, Rz, Tx, Rx;
-		double d_i, theta_i, a_i, alpha_i;
-
-		d_i = 0;
-		theta_i = this->rotation.x;
-		a_i = 0;
-		if (!this->parent_joint) alpha_i = 0;
-		else alpha_i = Constant::PI * 0.5;
-		
-		Tz = Tz_Generator(d_i);
-		Rz = Rz_Generator(theta_i);
-		Tx = Tx_Generator(a_i);
-		Rx = Rx_Generator(alpha_i);
-
-		DH_Matrix M_x = Tz * Rz * Tx * Rx;
-
-		d_i = 0; 
-		theta_i = this->rotation.z; 
-		a_i = this->distance; 
-		alpha_i = -Constant::PI * 0.5 + this->rotation.y;
-
-		Tz = Tz_Generator(d_i);
-		Rz = Rz_Generator(theta_i);
-		Tx = Tx_Generator(a_i);
-		Rx = Rx_Generator(alpha_i);
-
-		DH_Matrix M_z = Tz * Rz * Tx * Rx;
-
-		this->dh_matrix = parent_matrix * M_x * M_z;
-
-		this->position = {
-			this->dh_matrix(0, 3),
-			this->dh_matrix(1, 3),
-			this->dh_matrix(2, 3)
-		};
+		this->position = Calculate::DHMatrixToPosition(this->dh_matrix);
 		
 		this->update_seed = Joint::current_update_seed;
 	}
@@ -320,10 +246,21 @@ Joint<JointType::NONE>* Joint<type>::GetParentJoint() {
 }
 
 template<JointType type>
+inline Joint<>* Joint<type>::GetAngle(double& x_rot, double& y_rot, double& z_rot) {
+	x_rot = Constant::DEG(this->rotation.x);
+	y_rot = Constant::DEG(this->rotation.y);
+	z_rot = Constant::DEG(this->rotation.z);
+	return this;
+}
+
+template<JointType type>
 Joint<>* Joint<type>::InitAngle(double x_rot, double y_rot, double z_rot) {
-	this->rotation.x = Constant::RAD(x_rot);
-	this->rotation.y = Constant::RAD(y_rot);
-	this->rotation.z = Constant::RAD(z_rot);
+	this->initial_angle.x = Constant::RAD(x_rot);
+	this->initial_angle.y = Constant::RAD(y_rot);
+	this->initial_angle.z = Constant::RAD(z_rot);
+
+	this->rotation = this->initial_angle;
+
 	this->SetRangeX(0, 0);
 	this->SetRangeY(0, 0);
 	this->SetRangeZ(0, 0);
@@ -334,8 +271,8 @@ template<JointType type>
 inline Joint<>* Joint<type>::SetRangeX(double min, double max) {
 	min = Constant::RAD(min);
 	max = Constant::RAD(max);
-	this->range_x_min = min + this->rotation.x;
-	this->range_x_max = max + this->rotation.x;
+	this->range_x_min = min;
+	this->range_x_max = max;
 	return this;
 }
 
@@ -343,8 +280,8 @@ template<JointType type>
 inline Joint<>* Joint<type>::SetRangeY(double min, double max) {
 	min = Constant::RAD(min);
 	max = Constant::RAD(max);
-	this->range_y_min = min + this->rotation.y;
-	this->range_y_max = max + this->rotation.y;
+	this->range_y_min = min;
+	this->range_y_max = max;
 	return this;
 }
 
@@ -352,8 +289,8 @@ template<JointType type>
 inline Joint<>* Joint<type>::SetRangeZ(double min, double max) {
 	min = Constant::RAD(min);
 	max = Constant::RAD(max);
-	this->range_z_min = min + this->rotation.z;
-	this->range_z_max = max + this->rotation.z;
+	this->range_z_min = min;
+	this->range_z_max = max;
 	return this;
 }
 
@@ -374,9 +311,21 @@ void Joint<type>::SetAngleAsProgress(double x_rot, double y_rot, double z_rot) {
 }
 
 template<JointType type>
+inline void Joint<type>::SetForce(double x, double y, double z) {
+	this->force.x += x;
+	this->force.y += y;
+	this->force.z += z;
+}
+
+template<JointType type>
 inline Joint<>* Joint<type>::SetFlag(JointFlag flag) {
 	this->flag = static_cast<int>(flag);
 	return this;
+}
+
+template<JointType type>
+inline DH_Matrix Joint<type>::GetDHMatrix() {
+	return this->dh_matrix;
 }
 
 template<JointType type>
@@ -395,7 +344,7 @@ inline bool Joint<type>::IsEndEffector() {
 }
 
 template<JointType T>
-void Joint<T>::NewCalculation() {
+void Joint<T>::NewComputation() {
 	int new_seed = SDL_GetTicks();
 	Joint::current_update_seed =
 		new_seed == Joint::current_update_seed ? new_seed + 1 : new_seed;

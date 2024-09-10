@@ -9,10 +9,19 @@ Hand::~Hand() {
 	for(int i=0;i<joints.size();i++) {
 		delete joints[i];
 	}
-	for (int i = 0; i < clicking_motion_function_set.size(); i++) {
-		delete clicking_motion_function_set[i];
+	for (int i = 0; i < muscles.size(); i++) {
+		delete muscles[i];
+	}
+	for (int i = 0; i < press_motion_function_set.size(); i++) {
+		delete press_motion_function_set[i];
+	}
+	for (int i = 0; i < release_motion_function_set.size(); i++) {
+		delete release_motion_function_set[i];
 	}
 	joints.clear();
+	muscles.clear();
+	press_motion_function_set.clear();
+	release_motion_function_set.clear();
 }
 
 Hand* Hand::AddJoint(Joint<>* joint) {
@@ -20,29 +29,31 @@ Hand* Hand::AddJoint(Joint<>* joint) {
 	return this;
 }
 
-void Hand::Calculate() {
-	Joint<>::NewCalculation();
-	for(int i=0;i<joints.size();i++) {
-		joints[i]->Calculate();
+Hand* Hand::AddMuscle(Muscle* muscle) {
+	muscles.push_back(muscle);
+	return this;
+}
+
+void Hand::Compute() {
+	for (int i = 0; i < muscles.size(); i++) {
+		muscles[i]->Compute();
 	}
 
-	Eigen::Matrix3d rotation_matrix;
-	rotation_matrix =
-		Eigen::AngleAxisd(this->orientation_x, Eigen::Vector3d::UnitX())
-		* Eigen::AngleAxisd(this->orientation_y, Eigen::Vector3d::UnitY())
-		* Eigen::AngleAxisd(this->orientation_z, Eigen::Vector3d::UnitZ());
+	Joint<>::NewComputation();
+	for (int i = 0; i < joints.size(); i++) {
+		joints[i]->Compute();
+	}
+
+	Eigen::Matrix3d rotation_matrix = Calculate::RotationMatrix(this->orientation);
 	for (int i = 0; i < joints.size(); i++) {
 		Joint<>* joint = joints[i];
-		double x, y, z;
-		joint->GetPosition(x, y, z);
-
-		Eigen::Vector3d original_vector(x, y, z);
-		Eigen::Vector3d rotated_vector = original_vector.transpose() * rotation_matrix;
-		x = rotated_vector.x();
-		y = rotated_vector.y();
-		z = rotated_vector.z();
-
-		joint->SetPosition(x, y, z);
+		Vector3D point;
+		joint->GetPosition(point.x, point.y, point.z);
+		point = Calculate::Rotate(point, rotation_matrix);
+		joint->SetPosition(point.x, point.y, point.z);
+	}
+	for (int i = 0; i < muscles.size(); i++) {
+		muscles[i]->RotatePoints(rotation_matrix);
 	}
 }
 
@@ -56,6 +67,12 @@ void Hand::Render(SDL_Renderer *renderer, GraphicMode mode) {
 
 	rendering_tool->SetLineColor(GraphicColor::FRAME_COLOR_RGB);
 	rendering_tool->SetPointColor(GraphicColor::FRAME_COLOR_RGB);
+
+	if (mode == GraphicMode::SPECIFIC_FRAME) {
+		for (int i = 0; i < muscles.size(); i++) {
+			muscles[i]->Render(renderer);
+		}
+	}
 
 	for(int i=0;i<joints.size();i++) {
 		Joint<>* joint = joints[i];
@@ -137,7 +154,7 @@ std::vector<Joint<>*> Hand::GetJoints() {
 }
 
 void Hand::SetOrientation(double x, double y, double z) {
-	this->orientation_x += Constant::RAD(x);
-	this->orientation_y += Constant::RAD(y);
-	this->orientation_z += Constant::RAD(z);
+	this->orientation.x += Constant::RAD(x);
+	this->orientation.y += Constant::RAD(y);
+	this->orientation.z += Constant::RAD(z);
 }

@@ -9,7 +9,7 @@ SimulatorScene::~SimulatorScene() {
 
 int SimulatorScene::Rendering() {
 	for (int i = 0; i < this->hands.size(); i++) {
-		this->hands[i]->Calculate();
+		this->hands[i]->Compute();
 	}
 	if (this->MovingFunction) {
 		(*(this->MovingFunction))();
@@ -41,36 +41,24 @@ int SimulatorScene::EventProcess(Event& evt) {
 		else if (evt.key == SDLK_SPACE) {
 			this->moving_value *= -1;
 		}
+		else if (SDLK_0 <= evt.key && evt.key <= SDLK_9) {
+			int NUM = evt.key - SDLK_0;
+			if (NUM == 0) NUM = 10;
+			NUM--;
+			for (int i = 0; i < this->hands.size(); i++) {
+				if (this->hands[i]->release_motion_function_set.size() <= NUM) continue;
+				(*this->hands[i]->release_motion_function_set[NUM])();
+			}
+		}
 	}
 	else if (evt.type == EventType::KEY_DOWN) {
-		if (evt.key == SDLK_h) {
+		if (SDLK_0 <= evt.key && evt.key <= SDLK_9) {
+			int NUM = evt.key - SDLK_0;
+			if(NUM == 0) NUM = 10;
+			NUM--;
 			for (int i = 0; i < this->hands.size(); i++) {
-				if (this->hands[i]->clicking_motion_function_set.size() < 1) continue;
-				(*this->hands[i]->clicking_motion_function_set[0])();
-			}
-		}
-		else if (evt.key == SDLK_j) {
-			for (int i = 0; i < this->hands.size(); i++) {
-				if (this->hands[i]->clicking_motion_function_set.size() < 2) continue;
-				(*this->hands[i]->clicking_motion_function_set[1])();
-			}
-		}
-		else if (evt.key == SDLK_k) {
-			for (int i = 0; i < this->hands.size(); i++) {
-				if (this->hands[i]->clicking_motion_function_set.size() < 3) continue;
-				(*this->hands[i]->clicking_motion_function_set[2])();
-			}
-		}
-		else if (evt.key == SDLK_l) {
-			for (int i = 0; i < this->hands.size(); i++) {
-				if (this->hands[i]->clicking_motion_function_set.size() < 4) continue;
-				(*this->hands[i]->clicking_motion_function_set[3])();
-			}
-		}
-		else if (evt.key == SDLK_SEMICOLON) {
-			for (int i = 0; i < this->hands.size(); i++) {
-				if (this->hands[i]->clicking_motion_function_set.size() < 5) continue;
-				(*this->hands[i]->clicking_motion_function_set[4])();
+				if (this->hands[i]->press_motion_function_set.size() <= NUM) continue;
+				(*this->hands[i]->press_motion_function_set[NUM])();
 			}
 		}
 	}

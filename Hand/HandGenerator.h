@@ -27,4 +27,7 @@ public:
 class HandGenerator {
 public:
 	static Hand* Generate();
+
+	static Hand* Generate_Hand();
+	static Hand* Generate_Test();
 };

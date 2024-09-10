@@ -21,11 +21,11 @@
   <ItemGroup>
     <ClInclude Include="Constant.h" />
     <ClInclude Include="Event.h" />
-    <ClInclude Include="Finger.h" />
     <ClInclude Include="Hand.h" />
     <ClInclude Include="HandGenerator.h" />
     <ClInclude Include="Joint.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="Muscle.h" />
     <ClInclude Include="RenderingTool.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SimulatorScene.h" />
@@ -33,11 +33,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Constant.cpp" />
-    <ClCompile Include="Finger.cpp" />
     <ClCompile Include="Hand.cpp" />
     <ClCompile Include="HandGenerator.cpp" />
-    <ClCompile Include="Joint.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Muscle.cpp" />
     <ClCompile Include="RenderingTool.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SimulatorScene.cpp" />

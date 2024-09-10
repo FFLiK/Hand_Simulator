@@ -48,10 +48,10 @@
     <ClInclude Include="RenderingTool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Finger.h">
+    <ClInclude Include="HandGenerator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HandGenerator.h">
+    <ClInclude Include="Muscle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,19 +71,16 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="Joint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RenderingTool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Finger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HandGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Constant.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Muscle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
