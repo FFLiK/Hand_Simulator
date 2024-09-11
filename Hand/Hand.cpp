@@ -34,6 +34,11 @@ Hand* Hand::AddMuscle(Muscle* muscle) {
 	return this;
 }
 
+Hand* Hand::AddFalseLine(Joint<>* joint1, Joint<>* joint2) {
+	additional_false_line.push_back(make_pair(joint1, joint2));
+	return this;
+}
+
 void Hand::Compute() {
 	for (int i = 0; i < muscles.size(); i++) {
 		muscles[i]->Compute();
@@ -49,7 +54,11 @@ void Hand::Compute() {
 		Joint<>* joint = joints[i];
 		Vector3D point;
 		joint->GetPosition(point.x, point.y, point.z);
-		point = Calculate::Rotate(point, rotation_matrix);
+		Eigen::Vector3d original_vector(point.x, point.y, point.z);
+		Eigen::Vector3d rotated_vector = original_vector.transpose() * rotation_matrix;
+		point.x = rotated_vector.x();
+		point.y = rotated_vector.y();
+		point.z = rotated_vector.z();
 		joint->SetPosition(point.x, point.y, point.z);
 	}
 	for (int i = 0; i < muscles.size(); i++) {
@@ -72,6 +81,19 @@ void Hand::Render(SDL_Renderer *renderer, GraphicMode mode) {
 		for (int i = 0; i < muscles.size(); i++) {
 			muscles[i]->Render(renderer);
 		}
+	}
+
+	if (mode == GraphicMode::SPECIFIC_FRAME) {
+		rendering_tool->SetLineColor(GraphicColor::FALSE_COLOR_RGB);
+	}
+	for (int i = 0; i < this->additional_false_line.size(); i++) {
+		Joint<>* joint1 = additional_false_line[i].first;
+		Joint<>* joint2 = additional_false_line[i].second;
+		double x1, y1, z1;
+		double x2, y2, z2;
+		joint1->GetPosition(x1, y1, z1);
+		joint2->GetPosition(x2, y2, z2);
+		rendering_tool->DrawLine(renderer, x1, y1, z1, x2, y2, z2);
 	}
 
 	for(int i=0;i<joints.size();i++) {
@@ -107,40 +129,6 @@ void Hand::Render(SDL_Renderer *renderer, GraphicMode mode) {
 				}
 			}
 			rendering_tool->DrawLine(renderer, x_parent, y_parent, z_parent, x, y, z);
-
-			if (parent_joint->GetParentJoint() == nullptr) {
-				if (prev_carpal_x + prev_carpal_y + prev_carpal_z) {
-					if (mode == GraphicMode::SPECIFIC_FRAME) {
-						rendering_tool->SetLineColor(GraphicColor::FALSE_COLOR_RGB);
-					}
-					rendering_tool->DrawLine(renderer, prev_carpal_x, prev_carpal_y, prev_carpal_z, x, y, z);
-				}
-				else {
-					first_carpa_x = x;
-					first_carpa_y = y;
-					first_carpa_z = z;
-				}
-				prev_carpal_x = x;
-				prev_carpal_y = y;
-				prev_carpal_z = z;
-			}
-			else if (parent_joint->GetParentJoint()->GetParentJoint() == nullptr) {
-				if (prev_metacarpa_x + prev_metacarpa_y + prev_metacarpa_z) {
-					if (mode == GraphicMode::SPECIFIC_FRAME) {
-						rendering_tool->SetLineColor(GraphicColor::FALSE_COLOR_RGB);
-					}
-					rendering_tool->DrawLine(renderer, prev_metacarpa_x, prev_metacarpa_y, prev_metacarpa_z, x, y, z);
-				}
-				else if (first_carpa_x + first_carpa_y + first_carpa_z) {
-					if (mode == GraphicMode::SPECIFIC_FRAME) {
-						rendering_tool->SetLineColor(GraphicColor::FALSE_COLOR_RGB);
-					}
-					rendering_tool->DrawLine(renderer, first_carpa_x, first_carpa_y, first_carpa_z, x, y, z);
-				}
-				prev_metacarpa_x = x;
-				prev_metacarpa_y = y;
-				prev_metacarpa_z = z;
-			}
 		}
 	}
 	if (mode == GraphicMode::SPECIFIC_FRAME) {

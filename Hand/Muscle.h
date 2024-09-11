@@ -11,7 +11,6 @@ class UnitMuscle;
 class Muscle {
 private:
 	vector<UnitMuscle> muscles;
-	int num = 1;
 	double strength = 1.0;
 
 public:
@@ -20,9 +19,11 @@ public:
 
 	Muscle* SetMuscleUnitSize(int num);
 	Muscle* SetMuscleStrength(double strength);
+
+	int GetMuscleUnitSize();
 	UnitMuscle* GetMuscleUnit(int index);
 
-	void SetPower(double power);
+	void SetPower(double power, int index = -1);
 	double GetPower();
 
 	void RotatePoints(Eigen::Matrix3d rotation_matrix);
@@ -46,7 +47,8 @@ private:
 	int contracting_angle_sum = 0;
 	vector<JointFunctionGroup> joint_functions;
 
-	double power;
+	double core_power;
+	double dependent_power;
 
 	vector<Vector3D> muscle_visualizing_points;
 

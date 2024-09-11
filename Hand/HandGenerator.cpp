@@ -60,6 +60,19 @@ Hand* HandGenerator::Generate_Hand() {
 	hand->AddJoint(pinky_carpal)->AddJoint(pinky_metacarpa)->AddJoint(pinky_phalange_first)->AddJoint(pinky_phalange_second)->AddJoint(pinky_phalange_third);
 	hand->AddJoint(wrist_flesh_2);
 
+	hand->AddFalseLine(wrist_flesh_1, thumb_carpal);
+	hand->AddFalseLine(wrist_flesh_1, thumb_metacarpa);
+	hand->AddFalseLine(wrist_flesh_2, pinky_carpal);
+	hand->AddFalseLine(wrist_flesh_2, pinky_metacarpa);
+	hand->AddFalseLine(thumb_carpal, index_carpal);
+	hand->AddFalseLine(index_carpal, middle_carpal);
+	hand->AddFalseLine(middle_carpal, ring_carpal);
+	hand->AddFalseLine(ring_carpal, pinky_carpal);
+	hand->AddFalseLine(thumb_metacarpa, index_metacarpa);
+	hand->AddFalseLine(index_metacarpa, middle_metacarpa);
+	hand->AddFalseLine(middle_metacarpa, ring_metacarpa);
+	hand->AddFalseLine(ring_metacarpa, pinky_metacarpa);
+
 	hand->press_motion_function_set.push_back(new function<void()>([=]() {
 			static Progress progress;
 			thumb_metacarpa->SetAngleAsProgress(progress(), progress(), 0.0);
@@ -105,33 +118,71 @@ Hand* HandGenerator::Generate_Hand() {
 	return hand;
 }
 
+
 Hand* HandGenerator::Generate_Test() {
 	Hand* hand = new Hand();
 
-	hand->SetOrientation(-90, 0, 0);
+	hand->SetOrientation(0, 0, 0);
 
-	auto base = (new Joint<JointType::TIRTARY>(0))->InitAngle(0, 0, 0);
+	auto* base = (new Joint<JointType::TIRTARY>(0))->InitAngle(0, 0, 90);
 
-	auto first_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(200, base))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
-	auto second_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(180, first_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
-	auto third_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(150, second_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::END_EFFECTOR);
+	auto* left = (new Joint<JointType::NONE>(100, base))->InitAngle(0, 0, 90);
+	auto* right = (new Joint<JointType::NONE>(100, base))->InitAngle(0, 0, -90);
+
+	auto left_base = (new Joint<JointType::NONE>(0, left))->InitAngle(0, 0, -90);
+	auto right_base = (new Joint<JointType::NONE>(0, right))->InitAngle(0, 0, 90);
+
+	auto first_finger_first_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(200, left_base))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
+	auto first_finger_second_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(180, first_finger_first_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
+	auto first_finger_third_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(150, first_finger_second_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::END_EFFECTOR);
+
+	auto second_finger_first_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(200, base))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
+	auto second_finger_second_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(180, second_finger_first_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
+	auto second_finger_third_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(150, second_finger_second_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::END_EFFECTOR);
+
+	auto third_finger_first_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(200, right_base))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
+	auto third_finger_second_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(180, third_finger_first_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
+	auto third_finger_third_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(150, third_finger_second_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::END_EFFECTOR);
+
 
 	hand->AddJoint(base);
-	hand->AddJoint(first_joint);
-	hand->AddJoint(second_joint);
-	hand->AddJoint(third_joint);
+	hand->AddJoint(left);
+	hand->AddJoint(right);
+	hand->AddJoint(left_base);
+	hand->AddJoint(right_base);
+	hand->AddJoint(first_finger_first_joint);
+	hand->AddJoint(first_finger_second_joint);
+	hand->AddJoint(first_finger_third_joint);
+	hand->AddJoint(second_finger_first_joint);
+	hand->AddJoint(second_finger_second_joint);
+	hand->AddJoint(second_finger_third_joint);
+	hand->AddJoint(third_finger_first_joint);
+	hand->AddJoint(third_finger_second_joint);
+	hand->AddJoint(third_finger_third_joint);
 
-	auto inner_muscle = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
-	inner_muscle->GetMuscleUnit(0)->AddJoint(base, 0, 0)->AddJoint(first_joint, 0, 30)->AddJoint(second_joint, 0, 30)->AddJoint(third_joint, 0, 0);
+	auto inner_muscle = (new Muscle())->SetMuscleUnitSize(3)->SetMuscleStrength(1.0);
+	inner_muscle->GetMuscleUnit(0)->AddJoint(left_base, 0, 0)->AddJoint(first_finger_first_joint, 0, 30)->AddJoint(first_finger_second_joint, 0, 30)->AddJoint(first_finger_third_joint, 0, 0);
 	inner_muscle->GetMuscleUnit(0)->SetContractingAngleSummation(350);
+	inner_muscle->GetMuscleUnit(1)->AddJoint(base, 0, 0)->AddJoint(second_finger_first_joint, 0, 30)->AddJoint(second_finger_second_joint, 0, 30)->AddJoint(second_finger_third_joint, 0, 0);
+	inner_muscle->GetMuscleUnit(1)->SetContractingAngleSummation(350);
+	inner_muscle->GetMuscleUnit(2)->AddJoint(right_base, 0, 0)->AddJoint(third_finger_first_joint, 0, 30)->AddJoint(third_finger_second_joint, 0, 30)->AddJoint(third_finger_third_joint, 0, 0);
+	inner_muscle->GetMuscleUnit(2)->SetContractingAngleSummation(350);
 	
-	auto outer_muscle = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
-	outer_muscle->GetMuscleUnit(0)->AddJoint(base, 180, 0)->AddJoint(first_joint, 180, 30)->AddJoint(second_joint, 180, 30)->AddJoint(third_joint, 180, 0);
+	auto outer_muscle = (new Muscle())->SetMuscleUnitSize(3)->SetMuscleStrength(1.0);
+	outer_muscle->GetMuscleUnit(0)->AddJoint(left_base, 0, 0)->AddJoint(first_finger_first_joint, 180, 30)->AddJoint(first_finger_second_joint, 180, 30)->AddJoint(first_finger_third_joint, 180, 0);
 	outer_muscle->GetMuscleUnit(0)->SetContractingAngleSummation(30);
+	outer_muscle->GetMuscleUnit(1)->AddJoint(base, 0, 0)->AddJoint(second_finger_first_joint, 180, 30)->AddJoint(second_finger_second_joint, 180, 30)->AddJoint(second_finger_third_joint, 180, 0);
+	outer_muscle->GetMuscleUnit(1)->SetContractingAngleSummation(30);
+	outer_muscle->GetMuscleUnit(2)->AddJoint(right_base, 0, 0)->AddJoint(third_finger_first_joint, 180, 30)->AddJoint(third_finger_second_joint, 180, 30)->AddJoint(third_finger_third_joint, 180, 0);
+	outer_muscle->GetMuscleUnit(2)->SetContractingAngleSummation(30);
 
-	auto inner_sub_muscle = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
-	inner_sub_muscle->GetMuscleUnit(0)->AddJoint(base, 0, 0)->AddJoint(first_joint, 0, 15)->AddJoint(second_joint, 0, 0);
+	auto inner_sub_muscle = (new Muscle())->SetMuscleUnitSize(3)->SetMuscleStrength(1.0);
+	inner_sub_muscle->GetMuscleUnit(0)->AddJoint(left_base, 0, 0)->AddJoint(first_finger_first_joint, 0, 15)->AddJoint(first_finger_second_joint, 0, 0);
 	inner_sub_muscle->GetMuscleUnit(0)->SetContractingAngleSummation(250);
+	inner_sub_muscle->GetMuscleUnit(1)->AddJoint(base, 0, 0)->AddJoint(second_finger_first_joint, 0, 15)->AddJoint(second_finger_second_joint, 0, 0);
+	inner_sub_muscle->GetMuscleUnit(1)->SetContractingAngleSummation(250);
+	inner_sub_muscle->GetMuscleUnit(2)->AddJoint(right_base, 0, 0)->AddJoint(third_finger_first_joint, 0, 15)->AddJoint(third_finger_second_joint, 0, 0);
+	inner_sub_muscle->GetMuscleUnit(2)->SetContractingAngleSummation(250);
 
 	hand->AddMuscle(inner_muscle);
 	hand->AddMuscle(outer_muscle);
@@ -143,7 +194,7 @@ Hand* HandGenerator::Generate_Test() {
 			double power = inner_muscle->GetPower();
 			power += POWER_UNIT;
 			if (power > 1.0) power = 1.0;
-			inner_muscle->SetPower(power);
+			inner_muscle->SetPower(power, 0);
 		})
 	);
 
@@ -151,7 +202,7 @@ Hand* HandGenerator::Generate_Test() {
 			double power = inner_muscle->GetPower();
 			power -= POWER_UNIT;
 			if (power < 0.0) power = 0.0;
-			inner_muscle->SetPower(power);
+			inner_muscle->SetPower(power, 0);
 		})
 	);
 
@@ -159,7 +210,7 @@ Hand* HandGenerator::Generate_Test() {
 			double power = outer_muscle->GetPower();
 			power += POWER_UNIT;
 			if (power > 1.0) power = 1.0;
-			outer_muscle->SetPower(power);
+			outer_muscle->SetPower(power, 0);
 		})
 	);
 
@@ -167,7 +218,7 @@ Hand* HandGenerator::Generate_Test() {
 			double power = outer_muscle->GetPower();
 			power -= POWER_UNIT;
 			if (power < 0.0) power = 0.0;
-			outer_muscle->SetPower(power);
+			outer_muscle->SetPower(power, 0);
 		})
 	);
 
@@ -175,7 +226,7 @@ Hand* HandGenerator::Generate_Test() {
 			double power = inner_sub_muscle->GetPower();
 			power += POWER_UNIT;
 			if (power > 1.0) power = 1.0;
-			inner_sub_muscle->SetPower(power);
+			inner_sub_muscle->SetPower(power, 0);
 		})
 	);
 
@@ -183,7 +234,7 @@ Hand* HandGenerator::Generate_Test() {
 			double power = inner_sub_muscle->GetPower();
 			power -= POWER_UNIT;
 			if (power < 0.0) power = 0.0;
-			inner_sub_muscle->SetPower(power);
+			inner_sub_muscle->SetPower(power, 0);
 		})
 	);
 

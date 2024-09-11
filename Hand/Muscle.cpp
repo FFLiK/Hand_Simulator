@@ -3,14 +3,12 @@
 #include "RenderingTool.h"
 
 Muscle::Muscle() {
-	this->num = 0;
 }
 
 Muscle::~Muscle() {
 }
 
 Muscle* Muscle::SetMuscleUnitSize(int num) {
-	this->num = num;
 	this->muscles.resize(num);
 	return this;
 }
@@ -20,38 +18,53 @@ Muscle* Muscle::SetMuscleStrength(double strength) {
 	return this;
 }
 
+int Muscle::GetMuscleUnitSize() {
+	return this->muscles.size();
+}
+
 UnitMuscle* Muscle::GetMuscleUnit(int index) {
 	return &(this->muscles[index]);
 }
 
-void Muscle::SetPower(double power) {
-	for (int i = 0; i < this->num; i++) {
-		this->muscles[i].power = power * this->strength;
+void Muscle::SetPower(double power, int index) {
+	if (index == -1) {
+		for (int i = 0; i < this->muscles.size(); i++) {
+			this->muscles[i].core_power = power;
+		}
+	}
+	else {
+		this->muscles[index].core_power = power;
 	}
 }
 
 double Muscle::GetPower() {
 	double power = 0;
-	for (int i = 0; i < this->num; i++) {
-		power += this->muscles[i].power;
+	for (int i = 0; i < this->muscles.size(); i++) {
+		power += this->muscles[i].core_power;
 	}
-	return power / this->num;
+	return power / this->muscles.size();
 }
 
 void Muscle::RotatePoints(Eigen::Matrix3d rotation_matrix) {
-	for (int i = 0; i < this->num; i++) {
+	for (int i = 0; i < this->muscles.size(); i++) {
 		this->muscles[i].RotatePoints(rotation_matrix);
 	}
 }
 
 void Muscle::Compute() {
-	for (int i = 0; i < this->num; i++) {
+	for (int i = 0; i < this->muscles.size(); i++) {
+		this->muscles[i].dependent_power = 0;
+		for (int j = 0; j < this->muscles.size(); j++) {
+			if (this->muscles[j].core_power) {
+				this->muscles[i].dependent_power += this->muscles[j].core_power * pow(HandParameter::MUSCLE_UNIT_DEPENDENCY, abs(i - j));
+			}
+		}
 		this->muscles[i].Compute();
 	}
 }
 
 void Muscle::Render(SDL_Renderer* renderer) {
-	for (int i = 0; i < this->num; i++) {
+	for (int i = 0; i < this->muscles.size(); i++) {
 		this->muscles[i].Render(renderer);
 	}
 }
@@ -60,7 +73,8 @@ void Muscle::Render(SDL_Renderer* renderer) {
 
 UnitMuscle::UnitMuscle() {
 	this->contracting_angle_sum = 0;
-	this->power = 0;
+	this->core_power = 0;
+	this->dependent_power = 0;
 }
 
 UnitMuscle::~UnitMuscle() {
@@ -106,6 +120,19 @@ void UnitMuscle::RotatePoints(Eigen::Matrix3d rotation_matrix) {
 	}
 }
 
+// Compute the force of the muscle
+//tex:
+//For all Muscles $M_i$, for all Joints $J_j$ related to $M,
+//tex:
+//$F_j$ is Force of Joint $J_j$, $P_i$ is Power of Muscle $M_i$,
+//tex:
+//$C_i$ is Contracting Angle Summation of Muscle $M_i$
+
+//tex:
+//$$f_j(i) = \Delta \theta \cdot P_i$$
+//$$\text{where } \Delta \theta = \frac{\sum_{j=1}^{n} \theta_j - C_i}{360}$$
+//$$F_j = \sum_{i=1}^{m} f_j(i)$$
+
 void UnitMuscle::Compute() {
 	double angle_sum = 0;
 	for (int i = 0; i < this->joint_functions.size(); i++) {
@@ -113,7 +140,7 @@ void UnitMuscle::Compute() {
 	}
 	double delta = abs(angle_sum - this->contracting_angle_sum) / 360;
 	double sign = angle_sum < this->contracting_angle_sum ? 1 : -1;
-	double force = sign * delta * this->power;
+	double force = sign * delta * this->dependent_power;
 	for (int i = 0; i < this->joint_functions.size(); i++) {
 		this->joint_functions[i].Force(force);
 	}
@@ -129,7 +156,7 @@ void UnitMuscle::Render(SDL_Renderer* renderer) {
 
 	auto color = GraphicColor::MUSCLE_COLOR;
 
-	color.s += (100 - color.s) * (this->power > 1.0 ? 1.0 : this->power);
+	color.s += (100 - color.s) * (this->dependent_power > 1.0 ? 1.0 : this->dependent_power);
 
 	auto rgb = color.to_RGB();
 

@@ -7,8 +7,8 @@
 #include <SimulatorScene.h>
 #include <RenderingTool.h>
 #include <HandGenerator.h>
-
 using namespace std;
+
 int main(int argc, char *argv[]) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	Window* win = new Window({"Hand Simulator", Constant::WINDOW_WIDTH, Constant::WINDOW_HEIGHT, Constant::FPS});

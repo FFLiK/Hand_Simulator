@@ -16,6 +16,8 @@ private:
 	std::vector<Joint<>*> joints;
 	std::vector<Muscle*> muscles;
 
+	std::vector<pair<Joint<>*, Joint<>*> > additional_false_line;
+
 	Vector3D orientation;
 
 public:
@@ -24,6 +26,7 @@ public:
 
 	Hand* AddJoint(Joint<>* joint);
 	Hand* AddMuscle(Muscle* muscle);
+	Hand* AddFalseLine(Joint<>* joint1, Joint<>* joint2);
 	void Compute();
 	void Render(SDL_Renderer* renderer, GraphicMode mode);
 

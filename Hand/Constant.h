@@ -42,27 +42,33 @@ namespace GraphicColor {
 	const GraphicColor::RGB JOINT_COLOR_RGB = JOINT_COLOR.to_RGB();
 	const GraphicColor::HSV FALSE_COLOR(0, 0, 30);
 	const GraphicColor::RGB FALSE_COLOR_RGB = FALSE_COLOR.to_RGB();
-	const GraphicColor::HSV MUSCLE_COLOR(0, 50, 100);
+	const GraphicColor::HSV MUSCLE_COLOR(0, 30, 75);
 	const GraphicColor::RGB MUSCLE_COLOR_RGB = MUSCLE_COLOR.to_RGB();
 }
 
-class Constant {
-public:
+namespace Constant {
 	// Program Status
-	const static int WINDOW_WIDTH = 1280;
-	const static int WINDOW_HEIGHT = 720;
-	const static int ORIGIN_X = WINDOW_WIDTH / 2;
-	const static int ORIGIN_Y = WINDOW_HEIGHT / 2 + 300;
-	const static int FPS = 60;
-	const static int FRAME_DELAY = 1000 / FPS;
+	const int WINDOW_WIDTH = 1280;
+	const int WINDOW_HEIGHT = 720;
+	const int ORIGIN_X = WINDOW_WIDTH / 2;
+	const int ORIGIN_Y = WINDOW_HEIGHT / 2 + 300;
+	const int FPS = 60;
+	const int FRAME_DELAY = 1000 / FPS;
 
-	const static int LINE_DENSITY_UNIT = 3;
-	const static int LINE_WIDTH = 80;
+	const int LINE_DENSITY_UNIT = 3;
+	const int LINE_WIDTH = 80;
 
 	// Mathematically Constant
-	constexpr static double PI = 3.14159265358979323846;
-	constexpr static double RAD(double deg) { return deg * PI / 180; }
-	constexpr static double DEG(double rad) { return rad * 180 / PI; }
+	constexpr double PI = 3.14159265358979323846;
+	constexpr double RAD(double deg) { return deg * PI / 180; }
+	constexpr double DEG(double rad) { return rad * 180 / PI; }
+};
+
+namespace HandParameter {
+	const double MUSCLE_FORCE_AMPLIFICATION_FACTOR = 5.0;
+	const double NEUTRAL_FORCE_AMPLIFICATION_FACTOR = 1.0;
+
+	const double MUSCLE_UNIT_DEPENDENCY = 0.6;
 };
 
 class Vector3D {
@@ -79,11 +85,10 @@ public:
 using DH_Matrix = Eigen::Matrix<double, 4, 4>;
 const DH_Matrix EMPTY_MAT = Eigen::Matrix<double, 4, 4>::Identity();
 
-class Calculate {
-public:
-	static DH_Matrix DH_Parameters(Vector3D angle, double distance, DH_Matrix prev_matrix, bool is_first);
-	static Vector3D DHMatrixToPosition(DH_Matrix dh_matrix);
+namespace Calculate {
+	DH_Matrix DH_Parameters(Vector3D angle, double distance, DH_Matrix prev_matrix, bool is_first);
+	Vector3D DHMatrixToPosition(DH_Matrix dh_matrix);
 
-	static Eigen::Matrix3d RotationMatrix(Vector3D orientation);
-	static Vector3D Rotate(Vector3D point, Eigen::Matrix3d rotation_matrix);
+	Eigen::Matrix3d RotationMatrix(Vector3D orientation);
+	Vector3D Rotate(Vector3D point, Eigen::Matrix3d rotation_matrix);
 };

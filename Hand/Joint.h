@@ -189,18 +189,17 @@ Joint<T>::~Joint() {
 template<JointType T>
 void Joint<T>::Compute() {
 	// Force Update
-	double FORCE_AMPLIFICATION_FACTOR = 5.0;
-	this->force.x *= FORCE_AMPLIFICATION_FACTOR;
-	this->force.y *= FORCE_AMPLIFICATION_FACTOR;
-	this->force.z *= FORCE_AMPLIFICATION_FACTOR;
+	this->force.x *= HandParameter::MUSCLE_FORCE_AMPLIFICATION_FACTOR;
+	this->force.y *= HandParameter::MUSCLE_FORCE_AMPLIFICATION_FACTOR;
+	this->force.z *= HandParameter::MUSCLE_FORCE_AMPLIFICATION_FACTOR;
 
 	double x_delta = (Constant::DEG(this->initial_angle.x) - Constant::DEG(this->rotation.x)) / 360;
 	double y_delta = (Constant::DEG(this->initial_angle.y) - Constant::DEG(this->rotation.y)) / 360;
 	double z_delta = (Constant::DEG(this->initial_angle.z) - Constant::DEG(this->rotation.z)) / 360;
 	
-	this->force.x += x_delta;
-	this->force.y += y_delta;
-	this->force.z += z_delta;
+	this->force.x += x_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
+	this->force.y += y_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
+	this->force.z += z_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
 
 	this->SetAngle(this->force.x, this->force.y, this->force.z);
 	this->force = { 0, 0, 0 };
@@ -261,9 +260,9 @@ Joint<>* Joint<type>::InitAngle(double x_rot, double y_rot, double z_rot) {
 
 	this->rotation = this->initial_angle;
 
-	this->SetRangeX(0, 0);
-	this->SetRangeY(0, 0);
-	this->SetRangeZ(0, 0);
+	this->SetRangeX(x_rot, x_rot);
+	this->SetRangeY(y_rot, y_rot);
+	this->SetRangeZ(z_rot, z_rot);
 	return this;
 }
 
