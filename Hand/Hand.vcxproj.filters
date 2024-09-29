@@ -83,5 +83,8 @@
     <ClCompile Include="Muscle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Joint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -33,7 +33,7 @@ void SimulatorScene::AddHand(Hand* hand) {
 }
 
 int SimulatorScene::EventProcess(Event& evt) {
-	if (evt.type == EventType::KEY_UP) {
+	if (evt.T == EventType::KEY_UP) {
 		if (evt.key == SDLK_ESCAPE) {
 			this->rendering_mode++;
 			this->rendering_mode %= 4;
@@ -51,7 +51,7 @@ int SimulatorScene::EventProcess(Event& evt) {
 			}
 		}
 	}
-	else if (evt.type == EventType::KEY_DOWN) {
+	else if (evt.T == EventType::KEY_DOWN) {
 		if (SDLK_0 <= evt.key && evt.key <= SDLK_9) {
 			int NUM = evt.key - SDLK_0;
 			if(NUM == 0) NUM = 10;
@@ -62,7 +62,7 @@ int SimulatorScene::EventProcess(Event& evt) {
 			}
 		}
 	}
-	else if (evt.type == EventType::MOUSE_DOWN) {
+	else if (evt.T == EventType::MOUSE_DOWN) {
 		this->pressed_mouse = evt.mouse;
 		int x = evt.x;
 		int y = evt.y;
@@ -75,13 +75,13 @@ int SimulatorScene::EventProcess(Event& evt) {
 				if (x > joint_x - 5 && x < joint_x + 5 && y > joint_y - 5 && y < joint_y + 5) {
 					Joint<>* joint = joints[j];
 					if (this->pressed_mouse == MOUSE_LEFT) {
-						if (joint->Type() == JointType::PRIMARY 
-							|| joint->Type() == JointType::SECONDARY 
+						if (joint->Type() == JointType::PRIMARY
+							|| joint->Type() == JointType::SECONDARY
 							|| joint->Type() == JointType::TIRTARY)
 							this->MovingFunction = new function<void()>([=]() {joint->SetAngle(this->moving_value, 0, 0); });
 					}
 					else if (this->pressed_mouse == MOUSE_RIGHT) {
-						if (joint->Type() == JointType::SECONDARY 
+						if (joint->Type() == JointType::SECONDARY
 							|| joint->Type() == JointType::TIRTARY)
 							this->MovingFunction = new function<void()>([=]() {joint->SetAngle(0, 0, this->moving_value); });
 					}
@@ -91,12 +91,12 @@ int SimulatorScene::EventProcess(Event& evt) {
 		}
 		ESCAPE:;
 	}
-	else if (evt.type == EventType::MOUSE_UP) {
+	else if (evt.T == EventType::MOUSE_UP) {
 		delete this->MovingFunction;
 		this->MovingFunction = nullptr;
 		this->pressed_mouse = MOUSE_NONE;
 	}
-	else if (evt.type == EventType::MOUSE_MOVE) {
+	else if (evt.T == EventType::MOUSE_MOVE) {
 		delete this->MovingFunction;
 		this->MovingFunction = nullptr;
 		if (this->pressed_mouse != MOUSE_NONE) {

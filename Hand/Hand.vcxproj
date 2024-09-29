@@ -35,6 +35,7 @@
     <ClCompile Include="Constant.cpp" />
     <ClCompile Include="Hand.cpp" />
     <ClCompile Include="HandGenerator.cpp" />
+    <ClCompile Include="Joint.cpp" />
     <ClCompile Include="Main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClCompile>

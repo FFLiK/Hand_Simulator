@@ -12,8 +12,8 @@ public:
 
 	virtual int Rendering() abstract;
 	int RegisterRenderer(SDL_Renderer* ren);
-	int PushEvent(EventType type, SDL_Keycode key);
-	int PushEvent(EventType type, int x, int y, int x_rel, int y_rel, EventMouse mt);
+	int PushEvent(EventType T, SDL_Keycode key);
+	int PushEvent(EventType T, int x, int y, int x_rel, int y_rel, EventMouse mt);
 	
 	int Destroy();
 	

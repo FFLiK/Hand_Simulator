@@ -5,7 +5,7 @@ enum EventMouse { MOUSE_NONE, MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE };
 
 class Event {
 public:
-	EventType type = NONE;
+	EventType T = NONE;
 	SDL_Keycode key;
 	int x, y, x_rel, y_rel;
 	EventMouse mouse = MOUSE_NONE;

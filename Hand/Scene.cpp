@@ -22,13 +22,13 @@ int Scene::RegisterRenderer(SDL_Renderer* ren) {
     return 0;
 }
 
-int Scene::PushEvent(EventType type, SDL_Keycode key) {
-    this->event_queue.push({ type, key, 0, 0, 0, 0, MOUSE_NONE });
+int Scene::PushEvent(EventType T, SDL_Keycode key) {
+    this->event_queue.push({ T, key, 0, 0, 0, 0, MOUSE_NONE });
     return 0;
 }
 
-int Scene::PushEvent(EventType type, int x, int y, int x_rel, int y_rel, EventMouse mt) {
-	this->event_queue.push({ type, 0, x, y, x_rel, y_rel, mt });
+int Scene::PushEvent(EventType T, int x, int y, int x_rel, int y_rel, EventMouse mt) {
+	this->event_queue.push({ T, 0, x, y, x_rel, y_rel, mt });
 	return 0;
 }
 
