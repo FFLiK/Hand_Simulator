@@ -20,13 +20,6 @@ Window::Window(WindowData w_dat) {
 }
 
 Window::~Window() {
-	this->run = false;
-	while (!this->rendering_completed);
-	for (int i = 0; i < this->scene_list.size(); i++) {
-		delete this->scene_list[i];
-		this->scene_list[i] = nullptr;
-	}
-	this->scene_list.clear();
 	if (this->ren)
 		SDL_DestroyRenderer(this->ren);
 	if(this->win)
@@ -76,6 +69,7 @@ int Window::DeleteScene(Scene* scene) {
 	if (iter == this->scene_list.end()) {
 		return 1;
 	}
+	(*iter)->Destroy();
 	delete *iter;
 	*iter = nullptr;
 	this->scene_list.erase(iter);
@@ -98,6 +92,18 @@ void Window::__RenderingProcess__() {
 		}
 	}
 	this->rendering_completed = true;
+}
+
+int Window::Destroy() {
+	this->run = false;
+	while (!this->rendering_completed);
+	for (int i = 0; i < this->scene_list.size(); i++) {
+		this->scene_list[i]->Destroy();
+		delete this->scene_list[i];
+		this->scene_list[i] = nullptr;
+	}
+	this->scene_list.clear();
+	return 0;
 }
 
 EventType Window::PollEvent() {

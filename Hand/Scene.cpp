@@ -44,9 +44,10 @@ int Scene::__Process__() {
     return 0;
 }
 
-void Scene::SceneQuitReady() {
-    this->run = false;
-    while (!this->process_completed);
+int Scene::Destroy() {
+	this->run = false;
+	while (!this->process_completed);
+	return 0;
 }
 
 bool Scene::IsRun() {

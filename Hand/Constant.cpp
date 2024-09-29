@@ -201,6 +201,19 @@ DH_Matrix Calculate::DH_Parameters(Vector3D angle, double distance, DH_Matrix pr
 	double d_i, theta_i, a_i, alpha_i;
 
 	d_i = 0;
+	theta_i = 0;
+	a_i = 0;
+	if (is_first) alpha_i = 0;
+	else alpha_i = angle.y;
+
+	Tz = Tz_Generator(d_i);
+	Rz = Rz_Generator(theta_i);
+	Tx = Tx_Generator(a_i);
+	Rx = Rx_Generator(alpha_i);
+
+	DH_Matrix M_y = Tz * Rz * Tx * Rx;
+
+	d_i = 0;
 	theta_i = angle.x;
 	a_i = 0;
 	if (is_first) alpha_i = 0;
@@ -216,7 +229,7 @@ DH_Matrix Calculate::DH_Parameters(Vector3D angle, double distance, DH_Matrix pr
 	d_i = 0;
 	theta_i = angle.z;
 	a_i = distance;
-	alpha_i = -Constant::PI * 0.5 + angle.y;
+	alpha_i = -Constant::PI * 0.5;
 
 	Tz = Tz_Generator(d_i);
 	Rz = Rz_Generator(theta_i);
@@ -225,7 +238,7 @@ DH_Matrix Calculate::DH_Parameters(Vector3D angle, double distance, DH_Matrix pr
 
 	DH_Matrix M_z = Tz * Rz * Tx * Rx;
 
-	DH_Matrix dh_matrix = prev_matrix * M_x * M_z;
+	DH_Matrix dh_matrix = prev_matrix * M_y * M_x * M_z;
 
 	return dh_matrix;
 }

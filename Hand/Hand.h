@@ -6,9 +6,10 @@
 #include <functional>
 
 enum GraphicMode {
-	FRAME,
-	SPECIFIC_FRAME,
-	SOLID
+	FRAME = 0,
+	SPECIFIC_FRAME = 1,
+	SOLID = 3,
+	COORDINATE = 2
 };
 
 class Hand {

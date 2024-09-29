@@ -30,6 +30,7 @@ int main(int argc, char *argv[]) {
 			break;
 		}
 	}
+	win->Destroy();
 	delete win;
 	RenderingTool::ReleaseInstance();
 	SDL_Quit();

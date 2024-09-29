@@ -8,6 +8,10 @@ using namespace std;
 class Muslce;
 class UnitMuscle;
 
+enum MuscleMotionDirection {
+	ZERO, COS, SIN
+};
+
 class Muscle {
 private:
 	vector<UnitMuscle> muscles;
@@ -42,6 +46,8 @@ private:
 		function<double()> Angle;
 
 		function<Vector3D()> Point;
+
+		function<double()> Range;
 	};
 
 	int contracting_angle_sum = 0;
@@ -56,7 +62,12 @@ public:
 	UnitMuscle();
 	~UnitMuscle();
 
-	UnitMuscle* AddJoint(Joint<>* joint, double theta, double visualizing_distance);
+	UnitMuscle* AddJoint(
+		Joint<>* joint, double theta, double visualizing_distance, 
+		MuscleMotionDirection x_motion, 
+		MuscleMotionDirection y_motion, 
+		MuscleMotionDirection z_motion
+	);
 	UnitMuscle* SetContractingAngleSummation(int sum);
 
 	void RotatePoints(Eigen::Matrix3d rotation_matrix);

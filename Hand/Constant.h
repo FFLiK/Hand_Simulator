@@ -69,6 +69,7 @@ namespace HandParameter {
 	const double NEUTRAL_FORCE_AMPLIFICATION_FACTOR = 1.0;
 
 	const double MUSCLE_UNIT_DEPENDENCY = 0.6;
+	const double MUSCLE_CONTRACTING_ANGLE_SUM_APLIFICATION_FACTOR = 1.2;
 };
 
 class Vector3D {

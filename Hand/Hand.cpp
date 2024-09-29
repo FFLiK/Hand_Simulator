@@ -51,15 +51,7 @@ void Hand::Compute() {
 
 	Eigen::Matrix3d rotation_matrix = Calculate::RotationMatrix(this->orientation);
 	for (int i = 0; i < joints.size(); i++) {
-		Joint<>* joint = joints[i];
-		Vector3D point;
-		joint->GetPosition(point.x, point.y, point.z);
-		Eigen::Vector3d original_vector(point.x, point.y, point.z);
-		Eigen::Vector3d rotated_vector = original_vector.transpose() * rotation_matrix;
-		point.x = rotated_vector.x();
-		point.y = rotated_vector.y();
-		point.z = rotated_vector.z();
-		joint->SetPosition(point.x, point.y, point.z);
+		joints[i]->RotatePoints(rotation_matrix);
 	}
 	for (int i = 0; i < muscles.size(); i++) {
 		muscles[i]->RotatePoints(rotation_matrix);
@@ -77,13 +69,13 @@ void Hand::Render(SDL_Renderer *renderer, GraphicMode mode) {
 	rendering_tool->SetLineColor(GraphicColor::FRAME_COLOR_RGB);
 	rendering_tool->SetPointColor(GraphicColor::FRAME_COLOR_RGB);
 
-	if (mode == GraphicMode::SPECIFIC_FRAME) {
+	if (mode == GraphicMode::SPECIFIC_FRAME || mode == GraphicMode::COORDINATE) {
 		for (int i = 0; i < muscles.size(); i++) {
 			muscles[i]->Render(renderer);
 		}
 	}
 
-	if (mode == GraphicMode::SPECIFIC_FRAME) {
+	if (mode == GraphicMode::SPECIFIC_FRAME || mode == GraphicMode::COORDINATE) {
 		rendering_tool->SetLineColor(GraphicColor::FALSE_COLOR_RGB);
 	}
 	for (int i = 0; i < this->additional_false_line.size(); i++) {
@@ -101,7 +93,7 @@ void Hand::Render(SDL_Renderer *renderer, GraphicMode mode) {
 		double x, y, z;
 		joint->GetPosition(x, y, z);
 
-		if (mode == GraphicMode::SPECIFIC_FRAME) {
+		if (mode == GraphicMode::SPECIFIC_FRAME || mode == GraphicMode::COORDINATE) {
 			if (joint->IsEndEffector()) {
 				rendering_tool->SetPointColor(GraphicColor::BONE_COLOR_RGB);
 			}
@@ -114,13 +106,14 @@ void Hand::Render(SDL_Renderer *renderer, GraphicMode mode) {
 		}
 		rendering_tool->DrawPoint(renderer, x, y, z);
 		Joint<>* parent_joint = joint->GetParentJoint();
+
 		if (parent_joint != nullptr) {
 			double x_parent, y_parent, z_parent;
 			parent_joint->GetPosition(x_parent, y_parent, z_parent);
 
 			Eigen::Vector3d original_vector(x_parent, y_parent, z_parent);
 
-			if (mode == GraphicMode::SPECIFIC_FRAME) {
+			if (mode == GraphicMode::SPECIFIC_FRAME || mode == GraphicMode::COORDINATE) {
 				if (joint->IsRealJoint()) {
 					rendering_tool->SetLineColor(GraphicColor::BONE_COLOR_RGB);
 				}
@@ -130,8 +123,15 @@ void Hand::Render(SDL_Renderer *renderer, GraphicMode mode) {
 			}
 			rendering_tool->DrawLine(renderer, x_parent, y_parent, z_parent, x, y, z);
 		}
+
+		if (mode == GraphicMode::COORDINATE) {
+			Vector3D normal;
+			joint->GetNormal(normal.x, normal.y, normal.z);
+			rendering_tool->SetLineColor(GraphicColor::FRAME_COLOR_RGB);
+			rendering_tool->DrawLine(renderer, normal.x, normal.y, normal.z, x, y, z);
+		}
 	}
-	if (mode == GraphicMode::SPECIFIC_FRAME) {
+	if (mode == GraphicMode::SPECIFIC_FRAME || mode == GraphicMode::COORDINATE) {
 		rendering_tool->SetLineColor(GraphicColor::FALSE_COLOR_RGB);
 	}
 	rendering_tool->DrawLine(renderer, prev_carpal_x, prev_carpal_y, prev_carpal_z, prev_metacarpa_x, prev_metacarpa_y, prev_metacarpa_z);

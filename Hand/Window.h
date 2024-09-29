@@ -11,8 +11,8 @@ private:
 	SDL_Renderer* ren;
 	SDL_Event evt;
 
-	bool run = false;
-	bool rendering_completed;
+	atomic<bool> run = false;
+	atomic<bool> rendering_completed;
 	int fps;
 
 	int windows_created_time;
@@ -37,6 +37,8 @@ public:
 	int AddScene(Scene *scene, int pos); //0 = Front, -1 = Back, n = nth index
 	int DeleteScene(Scene *scene);
 	void __RenderingProcess__();
+
+	int Destroy();
 	
 	EventType PollEvent();
 

@@ -20,7 +20,6 @@
 #define SDL_H
 #endif
 
-
 enum class JointType {
 	NONE, PRIMARY, SECONDARY, TIRTARY
 };
@@ -43,12 +42,11 @@ protected:
 
 	// Output
 	Vector3D position;
+	Vector3D normal;
 
 	// Force
 	Vector3D force;
-
 	DH_Matrix dh_matrix; // Denavit-Hartenberg matrix, M = Tz * Rz * Tx * Rx
-	
 	Joint<>* parent_joint;
 
 	// Limitation
@@ -67,9 +65,10 @@ protected:
 public:
 	Joint(double distance, Joint* parent = nullptr);
 	~Joint();
-	
+
 	void Compute();
-	void GetPosition(double& x, double& y, double& z);
+	Joint<>* GetPosition(double& x, double& y, double& z);
+	Joint<>* GetNormal(double& x, double& y, double& z);
 	Joint<>* SetPosition(double x, double y, double z);
 	Joint<>* GetParentJoint();
 	Joint<>* GetAngle(double& x_rot, double& y_rot, double& z_rot);
@@ -77,10 +76,14 @@ public:
 	Joint<>* SetRangeX(double min, double max);
 	Joint<>* SetRangeY(double min, double max);
 	Joint<>* SetRangeZ(double min, double max);
+	Joint<>* GetRangeX(double& min, double& max);
+	Joint<>* GetRangeY(double& min, double& max);
+	Joint<>* GetRangeZ(double& min, double& max);
 	Joint<>* SetFlag(JointFlag flag);
 	void SetAngle(double x_rot, double y_rot, double z_rot);
 	void SetAngleAsProgress(double x_rot, double y_rot, double z_rot);
 	void SetForce(double x, double y, double z);
+	void RotatePoints(Eigen::Matrix3d rotation_matrix);
 
 	DH_Matrix GetDHMatrix();
 
@@ -165,15 +168,16 @@ Joint<T>::Joint(double distance, Joint* parent) {
 	if (parent == this) {
 		throw "Joint cannot be parent of itself";
 	}
-	if (!parent) 
+	if (!parent)
 		distance = 0;
 
 	this->flag = 0;
-	
+
 	this->parent_joint = parent;
 
 	this->rotation = { 0, 0, 0 };
 	this->position = { 0, 0, 0 };
+	this->normal = { 0, 0, 0 };
 	this->distance = distance;
 
 	this->dh_matrix = EMPTY_MAT;
@@ -196,7 +200,7 @@ void Joint<T>::Compute() {
 	double x_delta = (Constant::DEG(this->initial_angle.x) - Constant::DEG(this->rotation.x)) / 360;
 	double y_delta = (Constant::DEG(this->initial_angle.y) - Constant::DEG(this->rotation.y)) / 360;
 	double z_delta = (Constant::DEG(this->initial_angle.z) - Constant::DEG(this->rotation.z)) / 360;
-	
+
 	this->force.x += x_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
 	this->force.y += y_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
 	this->force.z += z_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
@@ -219,16 +223,28 @@ void Joint<T>::Compute() {
 		this->dh_matrix = Calculate::DH_Parameters(this->rotation, this->distance, parent_matrix, !this->parent_joint);
 
 		this->position = Calculate::DHMatrixToPosition(this->dh_matrix);
-		
+
+		auto x_matrix = Calculate::DH_Parameters(Vector3D(Constant::RAD(90 + (this->rotation.x) / 2), 0, 0), 50, this->dh_matrix, false);
+		this->normal = Calculate::DHMatrixToPosition(x_matrix);
+
 		this->update_seed = Joint::current_update_seed;
 	}
 }
 
 template<JointType T>
-void Joint<T>::GetPosition(double& x, double& y, double& z) {
+inline Joint<>* Joint<T>::GetPosition(double& x, double& y, double& z) {
 	x = this->position.x;
 	y = this->position.y;
 	z = this->position.z;
+	return this;
+}
+
+template<JointType T>
+inline Joint<>* Joint<T>::GetNormal(double& x, double& y, double& z) {
+	x = this->normal.x;
+	y = this->normal.y;
+	z = this->normal.z;
+	return this;
 }
 
 template<JointType type>
@@ -294,19 +310,24 @@ inline Joint<>* Joint<type>::SetRangeZ(double min, double max) {
 }
 
 template<JointType type>
-void Joint<type>::SetAngle(double x_rot, double y_rot, double z_rot) {
-	this->rotation.x += Constant::RAD(x_rot);
-	this->rotation.y += Constant::RAD(y_rot);
-	this->rotation.z += Constant::RAD(z_rot);
-	this->AdjustOverAngle();
+inline Joint<>* Joint<type>::GetRangeZ(double& min, double& max) {
+	min = Constant::DEG(this->range_z_min);
+	max = Constant::DEG(this->range_z_max);
+	return this;
 }
 
 template<JointType type>
-void Joint<type>::SetAngleAsProgress(double x_rot, double y_rot, double z_rot) {
-	this->rotation.x = this->range_x_min + (this->range_x_max - this->range_x_min) * x_rot;
-	this->rotation.y = this->range_y_min + (this->range_y_max - this->range_y_min) * y_rot;
-	this->rotation.z = this->range_z_min + (this->range_z_max - this->range_z_min) * z_rot;
-	this->AdjustOverAngle();
+inline Joint<>* Joint<type>::GetRangeY(double& min, double& max) {
+	min = Constant::DEG(this->range_y_min);
+	max = Constant::DEG(this->range_y_max);
+	return this;
+}
+
+template<JointType type>
+inline Joint<>* Joint<type>::GetRangeX(double& min, double& max) {
+	min = Constant::DEG(this->range_x_min);
+	max = Constant::DEG(this->range_x_max);
+	return this;
 }
 
 template<JointType type>
@@ -317,9 +338,23 @@ inline void Joint<type>::SetForce(double x, double y, double z) {
 }
 
 template<JointType type>
+inline void Joint<type>::RotatePoints(Eigen::Matrix3d rotation_matrix) {
+	this->position = Calculate::Rotate(this->position, rotation_matrix);
+	this->normal = Calculate::Rotate(this->normal, rotation_matrix);
+}
+
+template<JointType type>
 inline Joint<>* Joint<type>::SetFlag(JointFlag flag) {
 	this->flag = static_cast<int>(flag);
 	return this;
+}
+
+template<JointType type>
+inline void Joint<type>::SetAngle(double x_rot, double y_rot, double z_rot) {
+	this->rotation.x += Constant::RAD(x_rot);
+	this->rotation.y += Constant::RAD(y_rot);
+	this->rotation.z += Constant::RAD(z_rot);
+	this->AdjustOverAngle();
 }
 
 template<JointType type>

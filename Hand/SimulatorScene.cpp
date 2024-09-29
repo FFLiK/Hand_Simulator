@@ -36,7 +36,7 @@ int SimulatorScene::EventProcess(Event& evt) {
 	if (evt.type == EventType::KEY_UP) {
 		if (evt.key == SDLK_ESCAPE) {
 			this->rendering_mode++;
-			this->rendering_mode %= 3;
+			this->rendering_mode %= 4;
 		}
 		else if (evt.key == SDLK_SPACE) {
 			this->moving_value *= -1;

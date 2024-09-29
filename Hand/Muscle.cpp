@@ -55,9 +55,10 @@ void Muscle::Compute() {
 	for (int i = 0; i < this->muscles.size(); i++) {
 		this->muscles[i].dependent_power = 0;
 		for (int j = 0; j < this->muscles.size(); j++) {
-			if (this->muscles[j].core_power) {
-				this->muscles[i].dependent_power += this->muscles[j].core_power * pow(HandParameter::MUSCLE_UNIT_DEPENDENCY, abs(i - j));
-			}
+			this->muscles[i].dependent_power += this->muscles[j].core_power * pow(HandParameter::MUSCLE_UNIT_DEPENDENCY, abs(i - j));
+		}
+		if (this->muscles[i].dependent_power > 1.0) {
+			this->muscles[i].dependent_power = 1.0;
 		}
 		this->muscles[i].Compute();
 	}
@@ -80,27 +81,63 @@ UnitMuscle::UnitMuscle() {
 UnitMuscle::~UnitMuscle() {
 }
 
-UnitMuscle* UnitMuscle::AddJoint(Joint<>* joint, double theta, double visualizing_distance) {
+UnitMuscle* UnitMuscle::AddJoint(Joint<>* joint, double theta, double visualizing_distance, MuscleMotionDirection x_motion, MuscleMotionDirection y_motion, MuscleMotionDirection z_motion) {
 	JointFunctionGroup fn;
-	double x_factor = cos(Constant::RAD(theta));
-	double z_factor = sin(Constant::RAD(theta));
+	double x_factor = sin(Constant::RAD(theta)) * (x_motion == MuscleMotionDirection::SIN) + cos(Constant::RAD(theta)) * (x_motion == MuscleMotionDirection::COS);
+	double y_factor = sin(Constant::RAD(theta)) * (y_motion == MuscleMotionDirection::SIN) + cos(Constant::RAD(theta)) * (y_motion == MuscleMotionDirection::COS);
+	double z_factor = sin(Constant::RAD(theta)) * (z_motion == MuscleMotionDirection::SIN) + cos(Constant::RAD(theta)) * (z_motion == MuscleMotionDirection::COS);
 
 	fn.Force = [=](double t) {
-		joint->SetForce(t * x_factor, 0, t * z_factor);
-	};
+		joint->SetForce(t * x_factor, t * y_factor, t * z_factor);
+		};
 
 	fn.Angle = [=]() {
 		double x, y, z;
 		joint->GetAngle(x, y, z);
-		return x * x_factor + z * z_factor;
-	};
+		return x * x_factor + y * y_factor + z * z_factor;
+		};
 
 	fn.Point = [=]() {
 		double x_angle, y_angle, z_angle;
 		joint->GetAngle(x_angle, y_angle, z_angle);
 		DH_Matrix dh_matrix = Calculate::DH_Parameters(Vector3D(Constant::RAD(90 + (x_angle) / 2), 0, Constant::RAD(theta)), visualizing_distance, joint->GetDHMatrix(), false);
 		return Calculate::DHMatrixToPosition(dh_matrix);
-	};
+		};
+
+	fn.Range = [=]() {
+		double x_range, y_range, z_range;
+		if (x_factor > 0.0) {
+			double min, max;
+			joint->GetRangeX(min, max);
+			x_range = max * x_factor;
+		}
+		else {
+			double min, max;
+			joint->GetRangeX(min, max);
+			x_range = min * x_factor;
+		}
+		if (y_factor > 0.0) {
+			double min, max;
+			joint->GetRangeY(min, max);
+			y_range = max * y_factor;
+		}
+		else {
+			double min, max;
+			joint->GetRangeY(min, max);
+			y_range = min * y_factor;
+		}
+		if (z_factor > 0.0) {
+			double min, max;
+			joint->GetRangeZ(min, max);
+			z_range = max * z_factor;
+		}
+		else {
+			double min, max;
+			joint->GetRangeZ(min, max);
+			z_range = min * z_factor;
+		}
+		return x_range + y_range + z_range;
+		};
 
 	this->joint_functions.push_back(fn);
 
@@ -109,6 +146,13 @@ UnitMuscle* UnitMuscle::AddJoint(Joint<>* joint, double theta, double visualizin
 
 UnitMuscle* UnitMuscle::SetContractingAngleSummation(int sum) {
 	this->contracting_angle_sum = sum;
+	if (sum == -1) {
+		this->contracting_angle_sum = 0;
+		for (int i = 0; i < this->joint_functions.size(); i++) {
+			this->contracting_angle_sum += this->joint_functions[i].Range();
+		}
+		this->contracting_angle_sum *= HandParameter::MUSCLE_CONTRACTING_ANGLE_SUM_APLIFICATION_FACTOR;
+	}
 	return this;
 }
 

@@ -2,6 +2,7 @@
 #include <SDL.h>
 #include <Event.h>
 #include <queue>
+#include <atomic>
 using namespace std;
 
 class Scene {
@@ -13,15 +14,16 @@ public:
 	int RegisterRenderer(SDL_Renderer* ren);
 	int PushEvent(EventType type, SDL_Keycode key);
 	int PushEvent(EventType type, int x, int y, int x_rel, int y_rel, EventMouse mt);
+	
+	int Destroy();
+	
 	bool IsRun();
 
 	int __Process__();
 
-	void SceneQuitReady();
-
 protected:
-	bool run = false;
-	bool process_completed = false;
+	atomic<bool> run = false;
+	atomic<bool> process_completed = false;
 
 	SDL_Renderer* ren;
 
