@@ -39,7 +39,7 @@ Hand* HandGenerator::Generate_Hand() {
 	auto index_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.265 * HL, index_metacarpa))->InitAngle(50, 0, 0)->SetRangeX(-25, 90)->SetRangeZ(-20, 20);
 	auto middle_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.277 * HL, middle_metacarpa))->InitAngle(45, 0, 0)->SetRangeX(-15, 90)->SetRangeZ(-20, 20);
 	auto ring_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.259 * HL, ring_metacarpa))->InitAngle(30, 0, 0)->SetRangeX(-15, 90)->SetRangeZ(-20, 20);
-	auto pinky_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.206 * HL, pinky_metacarpa))->InitAngle(15, 0, 0)->SetRangeX(-25, 90)->SetRangeZ(-20, 20);
+	auto pinky_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.206 * HL, pinky_metacarpa))->InitAngle(15, 0, 0)->SetRangeX(-25, 90)->SetRangeZ(-30, 30);
 
 	//  Phalanges : Proximal Interphalangeal (PIP)
 	auto index_phalange_second = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(0.143 * HL, index_phalange_first))->InitAngle(30, 0, 0)->SetRangeX(-2, 110);
@@ -168,6 +168,54 @@ Hand* HandGenerator::Generate_Hand() {
 	opponens_digiti_minimi->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(pinky_carpal, -60, 20, XZ)->AddJoint(pinky_metacarpa, -60, 20, XZ)->AddJoint(pinky_phalange_first, -60, 0, XZ);
 	opponens_digiti_minimi->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
+	// Lumbricals : ¹ú·¹±Ù
+	auto lumbrical_index = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	lumbrical_index->GetMuscleUnit(0)->AddJoint(index_phalange_first, 0, 0, XZ)->AddJoint(index_phalange_third, 180, 0, XZ);
+	lumbrical_index->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	auto lumbrical_middle = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	lumbrical_middle->GetMuscleUnit(0)->AddJoint(middle_phalange_first, 0, 0, XZ)->AddJoint(middle_phalange_third, 180, 0, XZ);
+	lumbrical_middle->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	auto lumbrical_ring = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	lumbrical_ring->GetMuscleUnit(0)->AddJoint(ring_phalange_first, 0, 0, XZ)->AddJoint(ring_phalange_third, 180, 0, XZ);
+	lumbrical_ring->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	auto lumbrical_pinky = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	lumbrical_pinky->GetMuscleUnit(0)->AddJoint(pinky_phalange_first, 0, 0, XZ)->AddJoint(pinky_phalange_third, 180, 0, XZ);
+	lumbrical_pinky->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+
+	// Dorsal Interossei : µîÂÊ»À»çÀÌ±Ù
+	auto dorsal_interossei_index = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	dorsal_interossei_index->GetMuscleUnit(0)->AddJoint(index_carpal, -90, 0, XZ)->AddJoint(index_metacarpa, -90, 20, XZ)->AddJoint(index_phalange_first, -90, 0, XZ);
+	dorsal_interossei_index->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	auto dorsal_interossei_middle_left = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	dorsal_interossei_middle_left->GetMuscleUnit(0)->AddJoint(middle_carpal, -90, 0, XZ)->AddJoint(middle_metacarpa, -90, 20, XZ)->AddJoint(middle_phalange_first, -90, 0, XZ);
+	dorsal_interossei_middle_left->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	auto dorsal_interossei_middle_right = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	dorsal_interossei_middle_right->GetMuscleUnit(0)->AddJoint(middle_carpal, 90, 0, XZ)->AddJoint(middle_metacarpa, 90, 20, XZ)->AddJoint(middle_phalange_first, 90, 0, XZ);
+	dorsal_interossei_middle_right->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	auto dorsal_interossei_ring = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	dorsal_interossei_ring->GetMuscleUnit(0)->AddJoint(ring_carpal, 90, 0, XZ)->AddJoint(ring_metacarpa, 90, 20, XZ)->AddJoint(ring_phalange_first, 90, 0, XZ);
+	dorsal_interossei_ring->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	// Palmar Interossei : ¼Õ¹Ù´Ú»À»çÀÌ±Ù
+	auto palmar_interossei_index = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	palmar_interossei_index->GetMuscleUnit(0)->AddJoint(index_carpal, 90, 0, XZ)->AddJoint(index_metacarpa, 90, 20, XZ)->AddJoint(index_phalange_first, 90, 0, XZ);
+	palmar_interossei_index->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	auto palmar_interossei_ring = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	palmar_interossei_ring->GetMuscleUnit(0)->AddJoint(ring_carpal, -90, 0, XZ)->AddJoint(ring_metacarpa, -90, 20, XZ)->AddJoint(ring_phalange_first, -90, 0, XZ);
+	palmar_interossei_ring->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	auto palmar_interossei_pinky = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	palmar_interossei_pinky->GetMuscleUnit(0)->AddJoint(pinky_carpal, -90, 0, XZ)->AddJoint(pinky_metacarpa, -90, 20, XZ)->AddJoint(pinky_phalange_first, -90, 0, XZ);
+	palmar_interossei_pinky->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
 	// ================================================
 
 	// Assign Joints to Hand
@@ -199,6 +247,19 @@ Hand* HandGenerator::Generate_Hand() {
 	hand->AddMuscle(flexor_digiti_minimi_brevis);
 	hand->AddMuscle(opponens_digiti_minimi);
 
+	hand->AddMuscle(lumbrical_index)
+		->AddMuscle(lumbrical_middle)
+		->AddMuscle(lumbrical_ring)
+		->AddMuscle(lumbrical_pinky);
+
+	hand->AddMuscle(dorsal_interossei_index)
+		->AddMuscle(dorsal_interossei_middle_left)
+		->AddMuscle(dorsal_interossei_middle_right)
+		->AddMuscle(dorsal_interossei_ring);
+	hand->AddMuscle(palmar_interossei_index)
+		->AddMuscle(palmar_interossei_ring)
+		->AddMuscle(palmar_interossei_pinky);
+
 	// Assign False Lines to Hand
 	hand->AddFalseLine(wrist_flesh_1, thumb_carpal);
 	hand->AddFalseLine(wrist_flesh_1, thumb_metacarpa);
@@ -215,34 +276,41 @@ Hand* HandGenerator::Generate_Hand() {
 
 	auto POWER_UNIT = 1.0;
 
-	auto press_function_generator([=](Muscle* muscle) {
+	auto press_function_generator([=](vector<Muscle*> muscle) {
 		return new function<void()>([=]() {
-			double power = muscle->GetPower();
-			power += POWER_UNIT;
-			if (power > 1.0) power = 1.0;
-			muscle->SetPower(power);
+			for (auto m : muscle) {
+				double power = m->GetPower();
+				power += POWER_UNIT;
+				if (power > 1.0) power = 1.0;
+				m->SetPower(power);
+			}
 			});
 		}
 	);
 
-	auto release_function_generator([=](Muscle* muscle) {
+	auto release_function_generator([=](vector<Muscle*> muscle) {
 		return new function<void()>([=]() {
-			double power = muscle->GetPower();
-			power -= POWER_UNIT;
-			if (power < 0.0) power = 0.0;
-			muscle->SetPower(power);
+			for (auto m : muscle) {
+				double power = m->GetPower();
+				power -= POWER_UNIT;
+				if (power < 0.0) power = 0.0;
+				m->SetPower(power);
+			}
 			});
 		}
 	);
 
-	hand->press_motion_function_set.push_back(press_function_generator(adductor_digiti_minimi));
-	hand->release_motion_function_set.push_back(release_function_generator(adductor_digiti_minimi));
+	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_index }));
+	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_index }));
 
-	hand->press_motion_function_set.push_back(press_function_generator(flexor_digiti_minimi_brevis));
-	hand->release_motion_function_set.push_back(release_function_generator(flexor_digiti_minimi_brevis));
+	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_middle }));
+	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_middle }));
 
-	hand->press_motion_function_set.push_back(press_function_generator(opponens_digiti_minimi));
-	hand->release_motion_function_set.push_back(release_function_generator(opponens_digiti_minimi));
+	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_ring }));
+	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_ring }));
+
+	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_pinky }));
+	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_pinky }));
 
 	return hand;
 }
