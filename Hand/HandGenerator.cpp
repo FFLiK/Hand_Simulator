@@ -31,15 +31,15 @@ Hand* HandGenerator::Generate_Hand() {
 	auto thumb_metacarpa = (Joint<JointType::TIRTARY>*)(new Joint<JointType::TIRTARY>(0.251 * HL, thumb_metacarpa_base))->InitAngle(0, 40, -40)->SetRangeY(0, 100)->SetRangeZ(-80, -10);
 	auto index_metacarpa = (new Joint<>(sqrt(pow(0.374 * HL, 2) + pow(0.126 * HB, 2)), index_carpal))->InitAngle(0, 0, 15);
 	auto middle_metacarpa = (new Joint<>(0.373 * HL, middle_carpal))->InitAngle(0, 0, 5);
-	auto ring_metacarpa = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(sqrt(pow(0.336 * HL, 2) + pow(0.077 * HB, 2)), ring_carpal))->InitAngle(7, 0, -4)->SetRangeX(0, 10)->SetRangeZ(-5, 0);
-	auto pinky_metacarpa = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(sqrt(pow(0.295 * HL, 2) + pow(0.179 * HB, 2)), pinky_carpal))->InitAngle(13, 0, -10)->SetRangeX(0, 20)->SetRangeZ(-13, 0);
+	auto ring_metacarpa = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(sqrt(pow(0.336 * HL, 2) + pow(0.077 * HB, 2)), ring_carpal))->InitAngle(7, 0, -4)->SetRangeX(0, 10)->SetRangeZ(-7, -2);
+	auto pinky_metacarpa = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(sqrt(pow(0.295 * HL, 2) + pow(0.179 * HB, 2)), pinky_carpal))->InitAngle(13, 0, -10)->SetRangeX(0, 20)->SetRangeZ(-18, -5);
 
 	//  Phalanges : Metacarpophalangeal (MCP)
 	auto thumb_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.196 * HL, thumb_metacarpa))->InitAngle(15, 30, 0)->SetRangeX(0, 90)->SetRangeZ(-15, 0);
-	auto index_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.265 * HL, index_metacarpa))->InitAngle(50, 0, 0)->SetRangeX(-25, 90)->SetRangeZ(-30, 30);
-	auto middle_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.277 * HL, middle_metacarpa))->InitAngle(45, 0, 0)->SetRangeX(-15, 90)->SetRangeZ(-30, 30);
-	auto ring_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.259 * HL, ring_metacarpa))->InitAngle(30, 0, 0)->SetRangeX(-15, 90)->SetRangeZ(-30, 30);
-	auto pinky_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.206 * HL, pinky_metacarpa))->InitAngle(15, 0, 0)->SetRangeX(-25, 90)->SetRangeZ(-30, 30);
+	auto index_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.265 * HL, index_metacarpa))->InitAngle(50, 0, 0)->SetRangeX(-25, 90)->SetRangeZ(-20, 20);
+	auto middle_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.277 * HL, middle_metacarpa))->InitAngle(45, 0, 0)->SetRangeX(-15, 90)->SetRangeZ(-20, 20);
+	auto ring_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.259 * HL, ring_metacarpa))->InitAngle(30, 0, 0)->SetRangeX(-15, 90)->SetRangeZ(-20, 20);
+	auto pinky_phalange_first = (Joint<JointType::SECONDARY>*)(new Joint<JointType::SECONDARY>(0.206 * HL, pinky_metacarpa))->InitAngle(15, 0, 0)->SetRangeX(-25, 90)->SetRangeZ(-20, 20);
 
 	//  Phalanges : Proximal Interphalangeal (PIP)
 	auto index_phalange_second = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(0.143 * HL, index_phalange_first))->InitAngle(30, 0, 0)->SetRangeX(-2, 110);
@@ -150,11 +150,27 @@ Hand* HandGenerator::Generate_Hand() {
 
 	// Adductor Pollicis : ¾öÁö¸ðÀ½±Ù
 	auto adductor_pollicis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
-	adductor_pollicis->GetMuscleUnit(0)->AddJoint(index_carpal, 0, 0, XZ)->AddJoint(thumb_metacarpa, 0, 0, YZ);
+	adductor_pollicis->GetMuscleUnit(0)->AddJoint(index_carpal, 0, 0, XZ)->AddJoint(thumb_metacarpa, 20, 20, YZ)->AddJoint(middle_carpal, 0, 0, XZ);
 	adductor_pollicis->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	// Adductor Digiti Minimi : »õ³¢¹ú¸²±Ù
+	auto adductor_digiti_minimi = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	adductor_digiti_minimi->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(pinky_carpal, 80, 20, XZ)->AddJoint(pinky_metacarpa, 80, 0, XZ);
+	adductor_digiti_minimi->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	// Flexor Digiti Minimi Brevis : ÂªÀº»õ³¢±ÁÈû±Ù
+	auto flexor_digiti_minimi_brevis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	flexor_digiti_minimi_brevis->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(pinky_carpal, 0, 20, XZ)->AddJoint(pinky_metacarpa, 0, 20, XZ)->AddJoint(pinky_phalange_first, 0, 0, XZ);
+	flexor_digiti_minimi_brevis->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
+
+	// Opponens Digiti Minimi : »õ³¢¸Â¼¶±Ù
+	auto opponens_digiti_minimi = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	opponens_digiti_minimi->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(pinky_carpal, -60, 20, XZ)->AddJoint(pinky_metacarpa, -60, 20, XZ)->AddJoint(pinky_phalange_first, -60, 0, XZ);
+	opponens_digiti_minimi->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	// ================================================
 
+	// Assign Joints to Hand
 	hand->AddJoint(base);
 	hand->AddJoint(wrist_flesh_1);
 	hand->AddJoint(thumb_carpal)->AddJoint(thumb_metacarpa_base)->AddJoint(thumb_metacarpa)->AddJoint(thumb_phalange_first)->AddJoint(thumb_phalange_third);
@@ -164,6 +180,7 @@ Hand* HandGenerator::Generate_Hand() {
 	hand->AddJoint(pinky_carpal)->AddJoint(pinky_metacarpa)->AddJoint(pinky_phalange_first)->AddJoint(pinky_phalange_second)->AddJoint(pinky_phalange_third);
 	hand->AddJoint(wrist_flesh_2);
 
+	// Assign Muscles to Hand
 	hand->AddMuscle(flexor_digitorum_superficialis);
 	hand->AddMuscle(flexor_digitorum_profundus);
 	hand->AddMuscle(extensor_digitorum);
@@ -177,8 +194,12 @@ Hand* HandGenerator::Generate_Hand() {
 	hand->AddMuscle(aductor_pollicis_brevis);
 	hand->AddMuscle(flexor_pollicis_brevis);
 	hand->AddMuscle(opponens_pollicis);
+	hand->AddMuscle(adductor_pollicis);
+	hand->AddMuscle(adductor_digiti_minimi);
+	hand->AddMuscle(flexor_digiti_minimi_brevis);
+	hand->AddMuscle(opponens_digiti_minimi);
 
-
+	// Assign False Lines to Hand
 	hand->AddFalseLine(wrist_flesh_1, thumb_carpal);
 	hand->AddFalseLine(wrist_flesh_1, thumb_metacarpa);
 	hand->AddFalseLine(wrist_flesh_2, pinky_carpal);
@@ -214,20 +235,14 @@ Hand* HandGenerator::Generate_Hand() {
 		}
 	);
 
-	hand->press_motion_function_set.push_back(press_function_generator(extensor_pollicis_longus));
-	hand->release_motion_function_set.push_back(release_function_generator(extensor_pollicis_longus));
+	hand->press_motion_function_set.push_back(press_function_generator(adductor_digiti_minimi));
+	hand->release_motion_function_set.push_back(release_function_generator(adductor_digiti_minimi));
 
-	hand->press_motion_function_set.push_back(press_function_generator(extensor_pollicis_brevis));
-	hand->release_motion_function_set.push_back(release_function_generator(extensor_pollicis_brevis));
+	hand->press_motion_function_set.push_back(press_function_generator(flexor_digiti_minimi_brevis));
+	hand->release_motion_function_set.push_back(release_function_generator(flexor_digiti_minimi_brevis));
 
-	hand->press_motion_function_set.push_back(press_function_generator(aductor_pollicis_brevis));
-	hand->release_motion_function_set.push_back(release_function_generator(aductor_pollicis_brevis));
-
-	hand->press_motion_function_set.push_back(press_function_generator(flexor_pollicis_brevis));
-	hand->release_motion_function_set.push_back(release_function_generator(flexor_pollicis_brevis));
-
-	hand->press_motion_function_set.push_back(press_function_generator(opponens_pollicis));
-	hand->release_motion_function_set.push_back(release_function_generator(opponens_pollicis));
+	hand->press_motion_function_set.push_back(press_function_generator(opponens_digiti_minimi));
+	hand->release_motion_function_set.push_back(release_function_generator(opponens_digiti_minimi));
 
 	return hand;
 }
