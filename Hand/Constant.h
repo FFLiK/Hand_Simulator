@@ -66,11 +66,11 @@ namespace Constant {
 };
 
 namespace HandParameter {
-	const double MUSCLE_FORCE_AMPLIFICATION_FACTOR = 5.0;
+	const double MUSCLE_FORCE_AMPLIFICATION_FACTOR = 10.0;
 	const double NEUTRAL_FORCE_AMPLIFICATION_FACTOR = 1.0;
 
 	const double MUSCLE_UNIT_DEPENDENCY = 0.6;
-	const double MUSCLE_CONTRACTING_ANGLE_SUM_APLIFICATION_FACTOR = 1.2;
+	const double MUSCLE_CONTRACTING_ANGLE_SUM_APLIFICATION_CONSTANT = 20;
 };
 
 class Vector3D {

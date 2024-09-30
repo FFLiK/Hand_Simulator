@@ -11,7 +11,7 @@ public:
 	~SimulatorScene();
 	int Rendering();
 
-	int rendering_mode = 2;
+	int rendering_mode = 1;
 	EventMouse pressed_mouse = MOUSE_NONE;
 	function<void()>* MovingFunction = nullptr;
 

@@ -1,6 +1,7 @@
 #include "Muscle.h"
 #include "Hand.h"
 #include "RenderingTool.h"
+#include "Log.h"
 
 Muscle::Muscle() {
 }
@@ -136,6 +137,7 @@ UnitMuscle* UnitMuscle::AddJoint(Joint<>* joint, double theta, double visualizin
 			joint->GetRangeZ(min, max);
 			z_range = min * z_factor;
 		}
+
 		return x_range + y_range + z_range;
 		};
 
@@ -151,7 +153,7 @@ UnitMuscle* UnitMuscle::SetContractingAngleSummation(int sum) {
 		for (int i = 0; i < this->joint_functions.size(); i++) {
 			this->contracting_angle_sum += this->joint_functions[i].Range();
 		}
-		this->contracting_angle_sum *= HandParameter::MUSCLE_CONTRACTING_ANGLE_SUM_APLIFICATION_FACTOR;
+		this->contracting_angle_sum += HandParameter::MUSCLE_CONTRACTING_ANGLE_SUM_APLIFICATION_CONSTANT * this->joint_functions.size();
 	}
 	return this;
 }
@@ -174,7 +176,7 @@ void UnitMuscle::RotatePoints(Eigen::Matrix3d rotation_matrix) {
 
 //tex:
 //$$f_j(i) = \Delta \theta \cdot P_i$$
-//$$\text{where } \Delta \theta = \frac{\sum_{j=1}^{n} \theta_j - C_i}{360}$$
+//$$\text{where } \Delta \theta = \frac{C_i - \sum_{j=1}^{n} \theta_j}{360n}$$
 //$$F_j = \sum_{i=1}^{m} f_j(i)$$
 
 void UnitMuscle::Compute() {
@@ -182,9 +184,9 @@ void UnitMuscle::Compute() {
 	for (int i = 0; i < this->joint_functions.size(); i++) {
 		angle_sum += this->joint_functions[i].Angle();
 	}
-	double delta = abs(angle_sum - this->contracting_angle_sum) / 360;
-	double sign = angle_sum < this->contracting_angle_sum ? 1 : -1;
-	double force = sign * delta * this->dependent_power;
+	double delta = (this->contracting_angle_sum - angle_sum) / (360 * this->joint_functions.size());
+	
+	double force = delta * this->dependent_power;
 	for (int i = 0; i < this->joint_functions.size(); i++) {
 		this->joint_functions[i].Force(force);
 	}

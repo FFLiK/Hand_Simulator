@@ -19,14 +19,26 @@
     <Filter Include="Source Files\UI">
       <UniqueIdentifier>{0df7afc8-81a9-4663-8b76-9c40cbaae57b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Hand">
+      <UniqueIdentifier>{f0f16c99-dee9-42e9-b4bb-8e3443d28d39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Config">
+      <UniqueIdentifier>{d3b9de80-0c22-4bb1-aa05-449fe4f0dd1f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Simulator">
+      <UniqueIdentifier>{0c377856-b13d-4d2c-a688-15588f231fe1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Config">
+      <UniqueIdentifier>{4ebfa8fe-9196-4390-b094-995d78f17b63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Hand">
+      <UniqueIdentifier>{c6120839-6d12-41d3-b470-0d55c3f807fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Simulator">
+      <UniqueIdentifier>{a71f7b44-4c03-4529-b5df-8b8e2e841c34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Constant.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SimulatorScene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Event.h">
       <Filter>Header Files\UI</Filter>
     </ClInclude>
@@ -40,51 +52,57 @@
       <Filter>Header Files\UI</Filter>
     </ClInclude>
     <ClInclude Include="Hand.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Hand</Filter>
     </ClInclude>
     <ClInclude Include="Joint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderingTool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HandGenerator.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Hand</Filter>
     </ClInclude>
     <ClInclude Include="Muscle.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Hand</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderingTool.h">
+      <Filter>Header Files\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Constant.h">
+      <Filter>Header Files\Config</Filter>
+    </ClInclude>
+    <ClInclude Include="HandGenerator.h">
+      <Filter>Header Files\Simulator</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulatorScene.h">
+      <Filter>Header Files\Simulator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Hand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SimulatorScene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
       <Filter>Source Files\UI</Filter>
     </ClCompile>
-    <ClCompile Include="RenderingTool.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="HandGenerator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Constant.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Config</Filter>
     </ClCompile>
-    <ClCompile Include="Muscle.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Hand.cpp">
+      <Filter>Source Files\Hand</Filter>
     </ClCompile>
     <ClCompile Include="Joint.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Hand</Filter>
+    </ClCompile>
+    <ClCompile Include="Muscle.cpp">
+      <Filter>Source Files\Hand</Filter>
+    </ClCompile>
+    <ClCompile Include="HandGenerator.cpp">
+      <Filter>Source Files\Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files\Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulatorScene.cpp">
+      <Filter>Source Files\Simulator</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderingTool.cpp">
+      <Filter>Source Files\UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
