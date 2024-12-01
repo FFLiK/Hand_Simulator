@@ -2,7 +2,7 @@
 #include <thread>
 
 Hand* HandGenerator::Generate() {
-	return Generate_Hand();
+	return Generate_Test();
 }
 
 Hand* HandGenerator::Generate_Hand() {
@@ -300,17 +300,9 @@ Hand* HandGenerator::Generate_Hand() {
 		}
 	);
 
-	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_index }));
-	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_index }));
-
-	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_middle }));
-	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_middle }));
-
-	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_ring }));
-	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_ring }));
-
-	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_pinky }));
-	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_pinky }));
+	// Examples
+	// hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_index }));
+	// hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_index }));
 
 	return hand;
 }

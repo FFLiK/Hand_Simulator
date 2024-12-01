@@ -71,7 +71,16 @@ namespace HandParameter {
 
 	const double MUSCLE_UNIT_DEPENDENCY = 0.6;
 	const double MUSCLE_CONTRACTING_ANGLE_SUM_APLIFICATION_CONSTANT = 20;
+
+	const double STABLE_CONDITION = 0.001;
 };
+
+namespace OptimizationParameter {
+	const double LEARNING_RATE = 0.01;
+	const double ERROR_THRESHOLD = 0.001;
+
+	const int OPTIMIZING_LIMIT = 1000;
+}
 
 class Vector3D {
 public:

@@ -22,6 +22,8 @@ Hand::~Hand() {
 	muscles.clear();
 	press_motion_function_set.clear();
 	release_motion_function_set.clear();
+	previous_joints_position_data.clear();
+	current_joints_position_data.clear();
 }
 
 Hand* Hand::AddJoint(Joint<>* joint) {
@@ -40,6 +42,7 @@ Hand* Hand::AddFalseLine(Joint<>* joint1, Joint<>* joint2) {
 }
 
 void Hand::Compute() {
+
 	for (int i = 0; i < muscles.size(); i++) {
 		muscles[i]->Compute();
 	}
@@ -55,6 +58,14 @@ void Hand::Compute() {
 	}
 	for (int i = 0; i < muscles.size(); i++) {
 		muscles[i]->RotatePoints(rotation_matrix);
+	}
+
+	this->previous_joints_position_data = this->current_joints_position_data;
+	this->current_joints_position_data.clear();
+	for (int i = 0; i < this->joints.size(); i++) {
+		Vector3D pos;
+		this->joints[i]->GetPosition(pos.x, pos.y, pos.z);
+		this->current_joints_position_data.push_back(pos);
 	}
 }
 
@@ -145,4 +156,114 @@ void Hand::SetOrientation(double x, double y, double z) {
 	this->orientation.x += Constant::RAD(x);
 	this->orientation.y += Constant::RAD(y);
 	this->orientation.z += Constant::RAD(z);
+}
+
+void Hand::SetFinalPose(vector<Vector3D> args) {
+	for (int i = 0; i < this->result_function_set.size(); i++) {
+		delete this->result_function_set[i];
+	}
+	this->result_function_set.clear();
+
+	int k = 0;
+	for (int i = 0; i < this->joints.size(); i++) {
+		if (this->joints[i]->IsEndEffector()) {
+			this->result_function_set.push_back(
+				new function<double()>(
+					[=]()->double {
+						Vector3D target_position = args[k];
+						Vector3D current_position;
+						this->joints[i]->GetPosition(current_position.x, current_position.y, current_position.z);
+						Vector3D delta;
+						delta.x = target_position.x - current_position.x;
+						delta.y = target_position.y - current_position.y;
+						delta.z = target_position.z - current_position.z;
+						double distance = delta.x * delta.x + delta.y * delta.y + delta.z * delta.z;
+						return distance;
+					}
+				)
+			);
+			k++;
+		}
+	}
+}
+
+void Hand::Optimization() {
+	Log::Hand("Start Optimization . . .");
+
+	double delta = OptimizationParameter::LEARNING_RATE;
+	double epsilon = OptimizationParameter::ERROR_THRESHOLD;
+	
+	bool optimizing = true;
+	int optimize_step = 0;
+
+	while (optimizing) {
+		// 1. Jacobian Matrix (Muslcle Forces -> End Effectors (Result Function))
+		Eigen::MatrixXd jacobian_matrix = Eigen::MatrixXd::Zero(this->result_function_set.size(), this->muscles.size());
+
+		for (int i = 0; i < this->muscles.size(); i++) {
+			for (int j = 0; j < this->result_function_set.size(); j++) {
+				double original = (*this->result_function_set[j])();
+
+				this->muscles[i]->SetPower(this->muscles[i]->GetPower() + delta);
+				do this->Compute(); while (!this->IsStable());
+				double changed = (*this->result_function_set[j])();
+
+				jacobian_matrix(j, i) = (changed - original) / delta;
+
+				this->muscles[i]->SetPower(this->muscles[i]->GetPower() - delta);
+				do this->Compute(); while (!this->IsStable());
+			}
+		}
+
+		// 2. Optimization by Newton-Raphson Method
+		// Newton-Raphson Method: x_{n+1} = x_n - (Jacobian Matrix)^{-1} * f(x_n)
+		Eigen::MatrixXd jacobian_inverse = jacobian_matrix.inverse();
+		Eigen::VectorXd f_vector = Eigen::VectorXd::Zero(this->result_function_set.size());
+		for (int i = 0; i < this->result_function_set.size(); i++) {
+			f_vector(i) = (*this->result_function_set[i])();
+		}
+		Eigen::VectorXd delta_vector = jacobian_inverse * f_vector;
+
+		for (int i = 0; i < this->muscles.size(); i++) {
+			this->muscles[i]->SetPower(this->muscles[i]->GetPower() + delta_vector(i));
+		}
+
+		do this->Compute(); while (!this->IsStable());
+
+		// 3. Check Result
+		optimizing = false;
+		for (int i = 0; i < this->result_function_set.size(); i++) {
+			if (abs((*this->result_function_set[i])()) > epsilon) {
+				optimizing = true;
+				break;
+			}
+		}
+
+		optimize_step++;
+
+		if (optimize_step > OptimizationParameter::OPTIMIZING_LIMIT) {
+			Log::Error("Optimization Failed");
+			break;
+		}
+		else {
+			Log::Debug("Optimization Step: " + to_string(optimize_step) + " / " + to_string(OptimizationParameter::OPTIMIZING_LIMIT) + " (" + to_string(100 * optimize_step / OptimizationParameter::OPTIMIZING_LIMIT) + "%)");
+		}
+	}
+
+	Log::Hand("Finished");
+}
+
+bool Hand::IsStable() {
+	if (this->current_joints_position_data.size() != this->previous_joints_position_data.size())
+		return false;
+	for (int i = 0; i < this->current_joints_position_data.size(); i++) {
+		double dx = this->current_joints_position_data[i].x - this->previous_joints_position_data[i].x;
+		double dy = this->current_joints_position_data[i].y - this->previous_joints_position_data[i].y;
+		double dz = this->current_joints_position_data[i].z - this->previous_joints_position_data[i].z;
+		double distance = dx * dx + dy * dy + dz * dz;
+		if (distance > HandParameter::STABLE_CONDITION) {
+			return false;
+		}
+	}
+	return true;
 }

@@ -90,20 +90,20 @@ UnitMuscle* UnitMuscle::AddJoint(Joint<>* joint, double theta, double visualizin
 
 	fn.Force = [=](double t) {
 		joint->SetForce(t * x_factor, t * y_factor, t * z_factor);
-		};
+	};
 
 	fn.Angle = [=]() {
 		double x, y, z;
 		joint->GetAngle(x, y, z);
 		return x * x_factor + y * y_factor + z * z_factor;
-		};
+	};
 
 	fn.Point = [=]() {
 		double x_angle, y_angle, z_angle;
 		joint->GetAngle(x_angle, y_angle, z_angle);
 		DH_Matrix dh_matrix = Calculate::DH_Parameters(Vector3D(Constant::RAD(90 + (x_angle) / 2), 0, Constant::RAD(theta)), visualizing_distance, joint->GetDHMatrix(), false);
 		return Calculate::DHMatrixToPosition(dh_matrix);
-		};
+	};
 
 	fn.Range = [=]() {
 		double x_range, y_range, z_range;
@@ -139,7 +139,7 @@ UnitMuscle* UnitMuscle::AddJoint(Joint<>* joint, double theta, double visualizin
 		}
 
 		return x_range + y_range + z_range;
-		};
+	};
 
 	this->joint_functions.push_back(fn);
 

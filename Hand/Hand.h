@@ -21,6 +21,11 @@ private:
 
 	Vector3D orientation;
 
+	vector<function<double()>*> result_function_set;
+
+	std::vector<Vector3D> previous_joints_position_data;
+	std::vector<Vector3D> current_joints_position_data;
+
 public:
 	Hand();
 	~Hand();
@@ -37,4 +42,9 @@ public:
 
 	std::vector<function<void()>*> press_motion_function_set;
 	std::vector<function<void()>*> release_motion_function_set;
+
+	void SetFinalPose(vector<Vector3D> args);
+	void Optimization();
+
+	bool IsStable();
 };
