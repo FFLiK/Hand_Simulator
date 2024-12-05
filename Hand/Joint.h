@@ -1,5 +1,6 @@
 #pragma once
 #include <Constant.h>
+#include <Log.h>
 
 enum class JointType {
 	NONE, PRIMARY, SECONDARY, TIRTARY
@@ -47,7 +48,7 @@ public:
 	Joint(double distance, Joint* parent = nullptr);
 	virtual ~Joint();
 
-	void Compute();
+	void Compute(bool simulate_muscles = true);
 
 	Joint<>* GetPosition(double& x, double& y, double& z);
 	Joint<>* GetNormal(double& x, double& y, double& z);
@@ -140,28 +141,30 @@ Joint<T>::~Joint() {
 }
 
 template<JointType T>
-void Joint<T>::Compute() {
-	// Force Update
-	this->force.x *= HandParameter::MUSCLE_FORCE_AMPLIFICATION_FACTOR;
-	this->force.y *= HandParameter::MUSCLE_FORCE_AMPLIFICATION_FACTOR;
-	this->force.z *= HandParameter::MUSCLE_FORCE_AMPLIFICATION_FACTOR;
+void Joint<T>::Compute(bool simulate_muscles) {
+	if (simulate_muscles) {
+		// Force Update
+		this->force.x *= HandParameter::MUSCLE_FORCE_AMPLIFICATION_FACTOR;
+		this->force.y *= HandParameter::MUSCLE_FORCE_AMPLIFICATION_FACTOR;
+		this->force.z *= HandParameter::MUSCLE_FORCE_AMPLIFICATION_FACTOR;
 
-	double x_delta = (Constant::DEG(this->initial_angle.x) - Constant::DEG(this->rotation.x)) / 360;
-	double y_delta = (Constant::DEG(this->initial_angle.y) - Constant::DEG(this->rotation.y)) / 360;
-	double z_delta = (Constant::DEG(this->initial_angle.z) - Constant::DEG(this->rotation.z)) / 360;
+		double x_delta = (Constant::DEG(this->initial_angle.x) - Constant::DEG(this->rotation.x)) / 360;
+		double y_delta = (Constant::DEG(this->initial_angle.y) - Constant::DEG(this->rotation.y)) / 360;
+		double z_delta = (Constant::DEG(this->initial_angle.z) - Constant::DEG(this->rotation.z)) / 360;
 
-	this->force.x += x_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
-	this->force.y += y_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
-	this->force.z += z_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
+		this->force.x += x_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
+		this->force.y += y_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
+		this->force.z += z_delta * HandParameter::NEUTRAL_FORCE_AMPLIFICATION_FACTOR;
 
-	this->SetAngle(this->force.x, this->force.y, this->force.z);
+		this->SetAngle(this->force.x, this->force.y, this->force.z);
+	}
 	this->force = { 0, 0, 0 };
 
 	if (this->update_seed != Joint::current_update_seed) {
 		// Parent Calculation
 		DH_Matrix parent_matrix;
 		if (this->parent_joint) {
-			this->parent_joint->Compute();
+			this->parent_joint->Compute(simulate_muscles);
 			parent_matrix = this->parent_joint->dh_matrix;
 		}
 		else {

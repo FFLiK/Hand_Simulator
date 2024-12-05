@@ -101,6 +101,10 @@
     <IncludePath>D:\KSA\졸업연구\Hand\Hand;D:\KSA\졸업연구\Hand\Hand\include;$(IncludePath)</IncludePath>
     <LibraryPath>D:\KSA\졸업연구\Hand\Hand\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>D:\KSA\졸업연구\Hand\Hand;D:\KSA\졸업연구\Hand\Hand\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\KSA\졸업연구\Hand\Hand\lib\x64;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -157,6 +161,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_ttf.lib;SDL2_image.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

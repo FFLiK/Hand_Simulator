@@ -79,7 +79,7 @@ Hand* HandGenerator::Generate_Hand() {
 	flexor_digitorum_superficialis->GetMuscleUnit(3)->SetContractingAngleSummation(-1);
 
 	//  Flexor Digitorum Profundus : ±íÀº ¼Õ°¡¶ô ±ÁÈù±Ù
-	auto flexor_digitorum_profundus = (new Muscle())->SetMuscleUnitSize(4)->SetMuscleStrength(1.0);
+	auto flexor_digitorum_profundus = (new Muscle())->SetMuscleUnitSize(4)->SetMuscleStrength(0.8);
 	flexor_digitorum_profundus->GetMuscleUnit(0)->AddJoint(index_carpal, 0, 0, XZ)->AddJoint(index_metacarpa, 0, 20, XZ)->AddJoint(index_phalange_first, 0, 20, XZ)->AddJoint(index_phalange_second, 0, 20, XZ)->AddJoint(index_phalange_third, 0, 0, XZ);
 	flexor_digitorum_profundus->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 	flexor_digitorum_profundus->GetMuscleUnit(1)->AddJoint(middle_carpal, 0, 0, XZ)->AddJoint(middle_metacarpa, 0, 20, XZ)->AddJoint(middle_phalange_first, 0, 20, XZ)->AddJoint(middle_phalange_second, 0, 20, XZ)->AddJoint(middle_phalange_third, 0, 0, XZ);
@@ -101,32 +101,32 @@ Hand* HandGenerator::Generate_Hand() {
 	extensor_digitorum->GetMuscleUnit(3)->SetContractingAngleSummation(-1);
 
 	//  Flexor Pollicis Longus : ±ä¾öÁö±ÁÈû±Ù
-	auto flexor_pollicis_longus = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto flexor_pollicis_longus = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.9);
 	flexor_pollicis_longus->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(thumb_carpal, 0, 20, XZ)->AddJoint(thumb_metacarpa, 0, 20, YZ)->AddJoint(thumb_phalange_first, 0, 20, XZ)->AddJoint(thumb_phalange_third, 0, 0, XZ);
 	flexor_pollicis_longus->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	//  Aductor Pollicis Longus : ±ä¾öÁö¹ú¸²±Ù
-	auto aductor_pollicis_longus = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto aductor_pollicis_longus = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.7);
 	aductor_pollicis_longus->GetMuscleUnit(0)->AddJoint(base, 240, 0, XZ)->AddJoint(thumb_carpal, 240, 20, XZ)->AddJoint(thumb_metacarpa, 240, 0, YZ);
 	aductor_pollicis_longus->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	//  Extensor Pollicis Longus : ±ä¾öÁöÆï±Ù
-	auto extensor_pollicis_longus = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto extensor_pollicis_longus = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.9);
 	extensor_pollicis_longus->GetMuscleUnit(0)->AddJoint(base, 180, 0, XZ)->AddJoint(thumb_carpal, 180, 20, XZ)->AddJoint(thumb_metacarpa, 180, 20, YZ)->AddJoint(thumb_phalange_first, 180, 20, XZ)->AddJoint(thumb_phalange_third, 180, 0, XZ);
 	extensor_pollicis_longus->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	//  Extensor Pollicis Brevis : ÂªÀº¾öÁöÆï±Ù
-	auto extensor_pollicis_brevis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto extensor_pollicis_brevis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.9);
 	extensor_pollicis_brevis->GetMuscleUnit(0)->AddJoint(base, 180, 0, XZ)->AddJoint(thumb_carpal, 180, 10, XZ)->AddJoint(thumb_metacarpa, 180, 10, YZ)->AddJoint(thumb_phalange_first, 180, 0, XZ);
 	extensor_pollicis_brevis->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	//  Extensor Indicis : °ËÁöÆï±Ù
-	auto extensor_indicis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto extensor_indicis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.7);
 	extensor_indicis->GetMuscleUnit(0)->AddJoint(index_carpal, 180, 0, XZ)->AddJoint(index_metacarpa, 180, 10, XZ)->AddJoint(index_phalange_first, 180, 10, XZ)->AddJoint(index_phalange_second, 180, 10, XZ)->AddJoint(index_phalange_third, 180, 0, XZ);
 	extensor_indicis->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 	
 	//  Extensor Digiti Minimi : »õ³¢Æï±Ù
-	auto extensor_digiti_minimi = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto extensor_digiti_minimi = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.9);
 	extensor_digiti_minimi->GetMuscleUnit(0)->AddJoint(pinky_carpal, 180, 0, XZ)->AddJoint(pinky_metacarpa, 180, 10, XZ)->AddJoint(pinky_phalange_first, 180, 10, XZ)->AddJoint(pinky_phalange_second, 180, 10, XZ)->AddJoint(pinky_phalange_third, 180, 0, XZ);
 	extensor_digiti_minimi->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
@@ -134,85 +134,85 @@ Hand* HandGenerator::Generate_Hand() {
 	//! From the Hand
 	
 	// Aductor Pollicis Brevis : ÂªÀº¾öÁö¹ú¸²±Ù
-	auto aductor_pollicis_brevis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto aductor_pollicis_brevis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.6);
 	aductor_pollicis_brevis->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(thumb_carpal, -20, 30, XZ)->AddJoint(thumb_metacarpa, -70, 20, YZ)->AddJoint(thumb_phalange_first, -90, 0, XZ);
 	aductor_pollicis_brevis->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	// Flexor Pollicis Brevis : ÂªÀº¾öÁö±ÁÈû±Ù
-	auto flexor_pollicis_brevis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto flexor_pollicis_brevis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.6);
 	flexor_pollicis_brevis->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(thumb_carpal, 0, 20, XZ)->AddJoint(thumb_metacarpa, 0, 20, YZ)->AddJoint(thumb_phalange_first, 0, 0, XZ);
 	flexor_pollicis_brevis->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	// Opponens Pollicis : ¾öÁö¸Â¼¶±Ù
-	auto opponens_pollicis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto opponens_pollicis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	opponens_pollicis->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(thumb_carpal, 20, 20, XZ)->AddJoint(thumb_metacarpa, 20, 0, YZ);
 	opponens_pollicis->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	// Adductor Pollicis : ¾öÁö¸ðÀ½±Ù
-	auto adductor_pollicis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto adductor_pollicis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.5);
 	adductor_pollicis->GetMuscleUnit(0)->AddJoint(index_carpal, 0, 0, XZ)->AddJoint(thumb_metacarpa, 20, 20, YZ)->AddJoint(middle_carpal, 0, 0, XZ);
 	adductor_pollicis->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	// Adductor Digiti Minimi : »õ³¢¹ú¸²±Ù
-	auto adductor_digiti_minimi = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto adductor_digiti_minimi = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.5);
 	adductor_digiti_minimi->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(pinky_carpal, 80, 20, XZ)->AddJoint(pinky_metacarpa, 80, 0, XZ);
 	adductor_digiti_minimi->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	// Flexor Digiti Minimi Brevis : ÂªÀº»õ³¢±ÁÈû±Ù
-	auto flexor_digiti_minimi_brevis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto flexor_digiti_minimi_brevis = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	flexor_digiti_minimi_brevis->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(pinky_carpal, 0, 20, XZ)->AddJoint(pinky_metacarpa, 0, 20, XZ)->AddJoint(pinky_phalange_first, 0, 0, XZ);
 	flexor_digiti_minimi_brevis->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	// Opponens Digiti Minimi : »õ³¢¸Â¼¶±Ù
-	auto opponens_digiti_minimi = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto opponens_digiti_minimi = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	opponens_digiti_minimi->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(pinky_carpal, -60, 20, XZ)->AddJoint(pinky_metacarpa, -60, 20, XZ)->AddJoint(pinky_phalange_first, -60, 0, XZ);
 	opponens_digiti_minimi->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	// Lumbricals : ¹ú·¹±Ù
-	auto lumbrical_index = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto lumbrical_index = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	lumbrical_index->GetMuscleUnit(0)->AddJoint(index_phalange_first, 0, 0, XZ)->AddJoint(index_phalange_third, 180, 0, XZ);
 	lumbrical_index->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
-	auto lumbrical_middle = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto lumbrical_middle = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	lumbrical_middle->GetMuscleUnit(0)->AddJoint(middle_phalange_first, 0, 0, XZ)->AddJoint(middle_phalange_third, 180, 0, XZ);
 	lumbrical_middle->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
-	auto lumbrical_ring = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto lumbrical_ring = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	lumbrical_ring->GetMuscleUnit(0)->AddJoint(ring_phalange_first, 0, 0, XZ)->AddJoint(ring_phalange_third, 180, 0, XZ);
 	lumbrical_ring->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
-	auto lumbrical_pinky = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto lumbrical_pinky = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	lumbrical_pinky->GetMuscleUnit(0)->AddJoint(pinky_phalange_first, 0, 0, XZ)->AddJoint(pinky_phalange_third, 180, 0, XZ);
 	lumbrical_pinky->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 
 	// Dorsal Interossei : µîÂÊ»À»çÀÌ±Ù
-	auto dorsal_interossei_index = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto dorsal_interossei_index = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	dorsal_interossei_index->GetMuscleUnit(0)->AddJoint(index_carpal, -90, 0, XZ)->AddJoint(index_metacarpa, -90, 20, XZ)->AddJoint(index_phalange_first, -90, 0, XZ);
 	dorsal_interossei_index->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
-	auto dorsal_interossei_middle_left = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto dorsal_interossei_middle_left = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	dorsal_interossei_middle_left->GetMuscleUnit(0)->AddJoint(middle_carpal, -90, 0, XZ)->AddJoint(middle_metacarpa, -90, 20, XZ)->AddJoint(middle_phalange_first, -90, 0, XZ);
 	dorsal_interossei_middle_left->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
-	auto dorsal_interossei_middle_right = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto dorsal_interossei_middle_right = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	dorsal_interossei_middle_right->GetMuscleUnit(0)->AddJoint(middle_carpal, 90, 0, XZ)->AddJoint(middle_metacarpa, 90, 20, XZ)->AddJoint(middle_phalange_first, 90, 0, XZ);
 	dorsal_interossei_middle_right->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
-	auto dorsal_interossei_ring = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto dorsal_interossei_ring = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	dorsal_interossei_ring->GetMuscleUnit(0)->AddJoint(ring_carpal, 90, 0, XZ)->AddJoint(ring_metacarpa, 90, 20, XZ)->AddJoint(ring_phalange_first, 90, 0, XZ);
 	dorsal_interossei_ring->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
 	// Palmar Interossei : ¼Õ¹Ù´Ú»À»çÀÌ±Ù
-	auto palmar_interossei_index = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto palmar_interossei_index = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	palmar_interossei_index->GetMuscleUnit(0)->AddJoint(index_carpal, 90, 0, XZ)->AddJoint(index_metacarpa, 90, 20, XZ)->AddJoint(index_phalange_first, 90, 0, XZ);
 	palmar_interossei_index->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
-	auto palmar_interossei_ring = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto palmar_interossei_ring = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	palmar_interossei_ring->GetMuscleUnit(0)->AddJoint(ring_carpal, -90, 0, XZ)->AddJoint(ring_metacarpa, -90, 20, XZ)->AddJoint(ring_phalange_first, -90, 0, XZ);
 	palmar_interossei_ring->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
-	auto palmar_interossei_pinky = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	auto palmar_interossei_pinky = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.3);
 	palmar_interossei_pinky->GetMuscleUnit(0)->AddJoint(pinky_carpal, -90, 0, XZ)->AddJoint(pinky_metacarpa, -90, 20, XZ)->AddJoint(pinky_phalange_first, -90, 0, XZ);
 	palmar_interossei_pinky->GetMuscleUnit(0)->SetContractingAngleSummation(-1);
 
@@ -300,17 +300,9 @@ Hand* HandGenerator::Generate_Hand() {
 		}
 	);
 
+	// Examples
 	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_index }));
 	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_index }));
-
-	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_middle }));
-	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_middle }));
-
-	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_ring }));
-	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_ring }));
-
-	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_pinky }));
-	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_pinky }));
 
 	return hand;
 }
@@ -323,63 +315,63 @@ Hand* HandGenerator::Generate_Test() {
 
 	auto* base = (new Joint<JointType::TIRTARY>(0))->InitAngle(0, 0, 90);
 
-	auto* left = (new Joint<JointType::NONE>(100, base))->InitAngle(0, 0, 90);
-	auto* right = (new Joint<JointType::NONE>(100, base))->InitAngle(0, 0, -90);
+	//auto* left = (new Joint<JointType::NONE>(100, base))->InitAngle(0, 0, 90);
+	//auto* right = (new Joint<JointType::NONE>(100, base))->InitAngle(0, 0, -90);
 
-	auto left_base = (new Joint<JointType::NONE>(0, left))->InitAngle(0, 0, -90);
-	auto right_base = (new Joint<JointType::NONE>(0, right))->InitAngle(0, 0, 90);
+	//auto left_base = (new Joint<JointType::NONE>(0, left))->InitAngle(0, 0, -90);
+	//auto right_base = (new Joint<JointType::NONE>(0, right))->InitAngle(0, 0, 90);
 
-	auto first_finger_first_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(200, left_base))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
-	auto first_finger_second_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(180, first_finger_first_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
-	auto first_finger_third_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(150, first_finger_second_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::END_EFFECTOR);
+	//auto first_finger_first_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(200, left_base))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
+	//auto first_finger_second_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(180, first_finger_first_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
+	//auto first_finger_third_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(150, first_finger_second_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::END_EFFECTOR);
 
 	auto second_finger_first_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(200, base))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
 	auto second_finger_second_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(180, second_finger_first_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
 	auto second_finger_third_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(150, second_finger_second_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::END_EFFECTOR);
 
-	auto third_finger_first_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(200, right_base))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
-	auto third_finger_second_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(180, third_finger_first_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
-	auto third_finger_third_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(150, third_finger_second_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::END_EFFECTOR);
+	//auto third_finger_first_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(200, right_base))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
+	//auto third_finger_second_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(180, third_finger_first_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::REAL_JOINT);
+	//auto third_finger_third_joint = (Joint<JointType::PRIMARY>*)(new Joint<JointType::PRIMARY>(150, third_finger_second_joint))->InitAngle(30, 0, 0)->SetRangeX(-5, 110)->SetFlag(JointFlag::END_EFFECTOR);
 
 
 	hand->AddJoint(base);
-	hand->AddJoint(left);
-	hand->AddJoint(right);
-	hand->AddJoint(left_base);
-	hand->AddJoint(right_base);
-	hand->AddJoint(first_finger_first_joint);
-	hand->AddJoint(first_finger_second_joint);
-	hand->AddJoint(first_finger_third_joint);
+	//hand->AddJoint(left);
+	//hand->AddJoint(right);
+	//hand->AddJoint(left_base);
+	//hand->AddJoint(right_base);
+	//hand->AddJoint(first_finger_first_joint);
+	//hand->AddJoint(first_finger_second_joint);
+	//hand->AddJoint(first_finger_third_joint);
 	hand->AddJoint(second_finger_first_joint);
 	hand->AddJoint(second_finger_second_joint);
 	hand->AddJoint(second_finger_third_joint);
-	hand->AddJoint(third_finger_first_joint);
-	hand->AddJoint(third_finger_second_joint);
-	hand->AddJoint(third_finger_third_joint);
+	//hand->AddJoint(third_finger_first_joint);
+	//hand->AddJoint(third_finger_second_joint);
+	//hand->AddJoint(third_finger_third_joint);
 
-	auto inner_muscle = (new Muscle())->SetMuscleUnitSize(3)->SetMuscleStrength(1.0);
-	inner_muscle->GetMuscleUnit(0)->AddJoint(left_base, 0, 0, XZ)->AddJoint(first_finger_first_joint, 0, 30, XZ)->AddJoint(first_finger_second_joint, 0, 30, XZ)->AddJoint(first_finger_third_joint, 0, 0, XZ);
+	auto inner_muscle = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(0.8);
+	//inner_muscle->GetMuscleUnit(0)->AddJoint(left_base, 0, 0, XZ)->AddJoint(first_finger_first_joint, 0, 30, XZ)->AddJoint(first_finger_second_joint, 0, 30, XZ)->AddJoint(first_finger_third_joint, 0, 0, XZ);
+	//inner_muscle->GetMuscleUnit(0)->SetContractingAngleSummation(350);
+	inner_muscle->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(second_finger_first_joint, 0, 30, XZ)->AddJoint(second_finger_second_joint, 0, 30, XZ)->AddJoint(second_finger_third_joint, 0, 0, XZ);
 	inner_muscle->GetMuscleUnit(0)->SetContractingAngleSummation(350);
-	inner_muscle->GetMuscleUnit(1)->AddJoint(base, 0, 0, XZ)->AddJoint(second_finger_first_joint, 0, 30, XZ)->AddJoint(second_finger_second_joint, 0, 30, XZ)->AddJoint(second_finger_third_joint, 0, 0, XZ);
-	inner_muscle->GetMuscleUnit(1)->SetContractingAngleSummation(350);
-	inner_muscle->GetMuscleUnit(2)->AddJoint(right_base, 0, 0, XZ)->AddJoint(third_finger_first_joint, 0, 30, XZ)->AddJoint(third_finger_second_joint, 0, 30, XZ)->AddJoint(third_finger_third_joint, 0, 0, XZ);
-	inner_muscle->GetMuscleUnit(2)->SetContractingAngleSummation(350);
+	//inner_muscle->GetMuscleUnit(2)->AddJoint(right_base, 0, 0, XZ)->AddJoint(third_finger_first_joint, 0, 30, XZ)->AddJoint(third_finger_second_joint, 0, 30, XZ)->AddJoint(third_finger_third_joint, 0, 0, XZ);
+	//inner_muscle->GetMuscleUnit(2)->SetContractingAngleSummation(350);
 	
-	auto outer_muscle = (new Muscle())->SetMuscleUnitSize(3)->SetMuscleStrength(1.0);
-	outer_muscle->GetMuscleUnit(0)->AddJoint(left_base, 0, 0, XZ)->AddJoint(first_finger_first_joint, 180, 30, XZ)->AddJoint(first_finger_second_joint, 180, 30, XZ)->AddJoint(first_finger_third_joint, 180, 0, XZ);
+	auto outer_muscle = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	//outer_muscle->GetMuscleUnit(0)->AddJoint(left_base, 0, 0, XZ)->AddJoint(first_finger_first_joint, 180, 30, XZ)->AddJoint(first_finger_second_joint, 180, 30, XZ)->AddJoint(first_finger_third_joint, 180, 0, XZ);
+	//outer_muscle->GetMuscleUnit(0)->SetContractingAngleSummation(30);
+	outer_muscle->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(second_finger_first_joint, 180, 30, XZ)->AddJoint(second_finger_second_joint, 180, 30, XZ)->AddJoint(second_finger_third_joint, 180, 0, XZ);
 	outer_muscle->GetMuscleUnit(0)->SetContractingAngleSummation(30);
-	outer_muscle->GetMuscleUnit(1)->AddJoint(base, 0, 0, XZ)->AddJoint(second_finger_first_joint, 180, 30, XZ)->AddJoint(second_finger_second_joint, 180, 30, XZ)->AddJoint(second_finger_third_joint, 180, 0, XZ);
-	outer_muscle->GetMuscleUnit(1)->SetContractingAngleSummation(30);
-	outer_muscle->GetMuscleUnit(2)->AddJoint(right_base, 0, 0, XZ)->AddJoint(third_finger_first_joint, 180, 30, XZ)->AddJoint(third_finger_second_joint, 180, 30, XZ)->AddJoint(third_finger_third_joint, 180, 0, XZ);
-	outer_muscle->GetMuscleUnit(2)->SetContractingAngleSummation(30);
+	//outer_muscle->GetMuscleUnit(2)->AddJoint(right_base, 0, 0, XZ)->AddJoint(third_finger_first_joint, 180, 30, XZ)->AddJoint(third_finger_second_joint, 180, 30, XZ)->AddJoint(third_finger_third_joint, 180, 0, XZ);
+	//outer_muscle->GetMuscleUnit(2)->SetContractingAngleSummation(30);
 
-	auto inner_sub_muscle = (new Muscle())->SetMuscleUnitSize(3)->SetMuscleStrength(1.0);
-	inner_sub_muscle->GetMuscleUnit(0)->AddJoint(left_base, 0, 0, XZ)->AddJoint(first_finger_first_joint, 0, 15, XZ)->AddJoint(first_finger_second_joint, 0, 0, XZ);
+	auto inner_sub_muscle = (new Muscle())->SetMuscleUnitSize(1)->SetMuscleStrength(1.0);
+	//inner_sub_muscle->GetMuscleUnit(0)->AddJoint(left_base, 0, 0, XZ)->AddJoint(first_finger_first_joint, 0, 15, XZ)->AddJoint(first_finger_second_joint, 0, 0, XZ);
+	//inner_sub_muscle->GetMuscleUnit(0)->SetContractingAngleSummation(250);
+	inner_sub_muscle->GetMuscleUnit(0)->AddJoint(base, 0, 0, XZ)->AddJoint(second_finger_first_joint, 0, 15, XZ)->AddJoint(second_finger_second_joint, 0, 0, XZ);
 	inner_sub_muscle->GetMuscleUnit(0)->SetContractingAngleSummation(250);
-	inner_sub_muscle->GetMuscleUnit(1)->AddJoint(base, 0, 0, XZ)->AddJoint(second_finger_first_joint, 0, 15, XZ)->AddJoint(second_finger_second_joint, 0, 0, XZ);
-	inner_sub_muscle->GetMuscleUnit(1)->SetContractingAngleSummation(250);
-	inner_sub_muscle->GetMuscleUnit(2)->AddJoint(right_base, 0, 0, XZ)->AddJoint(third_finger_first_joint, 0, 15, XZ)->AddJoint(third_finger_second_joint, 0, 0, XZ);
-	inner_sub_muscle->GetMuscleUnit(2)->SetContractingAngleSummation(250);
+	//inner_sub_muscle->GetMuscleUnit(2)->AddJoint(right_base, 0, 0, XZ)->AddJoint(third_finger_first_joint, 0, 15, XZ)->AddJoint(third_finger_second_joint, 0, 0, XZ);
+	//inner_sub_muscle->GetMuscleUnit(2)->SetContractingAngleSummation(250);
 
 	hand->AddMuscle(inner_muscle);
 	hand->AddMuscle(outer_muscle);
