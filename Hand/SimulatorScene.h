@@ -19,6 +19,8 @@ public:
 
 	double moving_value = 1.0;
 
+	bool manual_mode = false;
+
 private:
 	int EventProcess(Event& evt);
 	int NormalProcess();

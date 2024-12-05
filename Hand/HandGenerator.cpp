@@ -300,9 +300,79 @@ Hand* HandGenerator::Generate_Hand() {
 		}
 	);
 
-	// Examples
-	hand->press_motion_function_set.push_back(press_function_generator({ lumbrical_index }));
-	hand->release_motion_function_set.push_back(release_function_generator({ lumbrical_index }));
+	//  Flexor Digitorum Superficialis : ¾èÀº ¼Õ°¡¶ô ±ÁÈù±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(flexor_digitorum_superficialis, 0, "flexor_digitorum_superficialis"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(flexor_digitorum_superficialis, 1, "flexor_digitorum_superficialis"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(flexor_digitorum_superficialis, 2, "flexor_digitorum_superficialis"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(flexor_digitorum_superficialis, 3, "flexor_digitorum_superficialis"));
+
+	//  Flexor Digitorum Profundus : ±íÀº ¼Õ°¡¶ô ±ÁÈù±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(flexor_digitorum_profundus, 0, "flexor_digitorum_profundus"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(flexor_digitorum_profundus, 1, "flexor_digitorum_profundus"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(flexor_digitorum_profundus, 2, "flexor_digitorum_profundus"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(flexor_digitorum_profundus, 3, "flexor_digitorum_profundus"));
+	
+	//  Extensor Digitorum : ¼Õ°¡¶ô Æï±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(extensor_digitorum, 0, "extensor_digitorum"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(extensor_digitorum, 1, "extensor_digitorum"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(extensor_digitorum, 2, "extensor_digitorum"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(extensor_digitorum, 3, "extensor_digitorum"));
+	
+	//  Flexor Pollicis Longus : ±ä¾öÁö±ÁÈû±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(flexor_pollicis_longus, 0, "flexor_pollicis_longus"));
+	
+	//  Aductor Pollicis Longus : ±ä¾öÁö¹ú¸²±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(aductor_pollicis_longus, 0, "aductor_pollicis_longus"));
+	
+	//  Extensor Pollicis Longus : ±ä¾öÁöÆï±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(extensor_pollicis_longus, 0, "extensor_pollicis_longus"));
+	
+	//  Extensor Pollicis Brevis : ÂªÀº¾öÁöÆï±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(extensor_pollicis_brevis, 0, "extensor_pollicis_brevis"));
+	
+	//  Extensor Indicis : °ËÁöÆï±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(extensor_indicis, 0, "extensor_indicis"));
+
+	//  Extensor Digiti Minimi : »õ³¢Æï±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(extensor_digiti_minimi, 0, "extensor_digiti_minimi"));
+
+	// Aductor Pollicis Brevis : ÂªÀº¾öÁö¹ú¸²±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(aductor_pollicis_brevis, 0, "aductor_pollicis_brevis"));
+	
+	// Flexor Pollicis Brevis : ÂªÀº¾öÁö±ÁÈû±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(flexor_pollicis_brevis, 0, "flexor_pollicis_brevis"));
+	
+	// Opponens Pollicis : ¾öÁö¸Â¼¶±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(opponens_pollicis, 0, "opponens_pollicis"));
+	
+	// Adductor Pollicis : ¾öÁö¸ðÀ½±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(adductor_pollicis, 0, "adductor_pollicis"));
+	
+	// Adductor Digiti Minimi : »õ³¢¹ú¸²±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(adductor_digiti_minimi, 0, "adductor_digiti_minimi"));
+	
+	// Flexor Digiti Minimi Brevis : ÂªÀº»õ³¢±ÁÈû±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(flexor_digiti_minimi_brevis, 0, "flexor_digiti_minimi_brevis"));
+	
+	// Opponens Digiti Minimi : »õ³¢¸Â¼¶±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(opponens_digiti_minimi, 0, "opponens_digiti_minimi"));
+	
+	// Lumbricals : ¹ú·¹±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(lumbrical_index, 0, "lumbrical"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(lumbrical_middle, 0, "lumbrical"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(lumbrical_ring, 0, "lumbrical"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(lumbrical_pinky, 0, "lumbrical"));
+	
+	// Dorsal Interossei : µîÂÊ»À»çÀÌ±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(dorsal_interossei_index, 0, "dorsal_interossei"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(dorsal_interossei_middle_left, 0, "dorsal_interossei"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(dorsal_interossei_middle_right, 0, "dorsal_interossei"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(dorsal_interossei_ring, 0, "dorsal_interossei"));
+	
+	// Palmar Interossei : ¼Õ¹Ù´Ú»À»çÀÌ±Ù
+	hand->motion_function_set.push_back(new SpecialMotionFunction(palmar_interossei_index, 0, "palmar_interossei"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(palmar_interossei_ring, 0, "palmar_interossei"));
+	hand->motion_function_set.push_back(new SpecialMotionFunction(palmar_interossei_pinky, 0, "palmar_interossei"));
 
 	return hand;
 }

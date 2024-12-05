@@ -12,6 +12,36 @@ enum GraphicMode {
 	COORDINATE = 2
 };
 
+class SpecialMotionFunction {
+private:
+	Muscle* muscle;
+	int index = 0;
+	double power = 0.0;
+	double power_unit = 0.05;
+	std::string txt;
+
+public:
+	SpecialMotionFunction(Muscle* muscle, int index, std::string txt) {
+		this->muscle = muscle;
+		this->index = index;
+		this->txt = txt;
+	}
+
+	void operator()() {
+		this->muscle->SetPower(this->power, this->index);
+		Log::Debug("[Manual Control]", txt, power);
+		power += power_unit;
+		if (power > 1.0) {
+			power = 1.0;
+			power_unit = -0.05;
+		}
+		else if (power < 0.0) {
+			power = 0.0;
+			power_unit = 0.05;
+		}
+	}
+};
+
 class Hand {
 private:
 	std::vector<Joint<>*> joints;
@@ -48,6 +78,7 @@ public:
 
 	std::vector<function<void()>*> press_motion_function_set;
 	std::vector<function<void()>*> release_motion_function_set;
+	std::vector<SpecialMotionFunction*> motion_function_set;
 
 	void GetCurrentPose(vector<Vector3D>& args);
 	void SetFinalPose(vector<Vector3D> args);
