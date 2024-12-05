@@ -1,5 +1,6 @@
 #include "SimulatorScene.h"
 #include "RenderingTool.h"
+#include "Log.h"
 
 SimulatorScene::SimulatorScene() {
 }
@@ -50,6 +51,36 @@ int SimulatorScene::EventProcess(Event& evt) {
 				(*this->hands[i]->release_motion_function_set[NUM])();
 			}
 		}
+		else if (SDLK_s == evt.key) {
+			for (int i = 0; i < this->hands.size(); i++) {
+				vector<Vector3D> pose;
+				this->hands[i]->GetCurrentPose(pose);
+				this->hands[i]->SetFinalPose(pose);
+			}
+			Log::Hand("Pose Saved");
+		}
+		else if (SDLK_p == evt.key) {
+			for (int i = 0; i < this->hands.size(); i++) {
+				vector<Vector3D> pose;
+				this->hands[i]->GetCurrentPose(pose);
+				Log::Hand("Current Pose");
+				for (int j = 0; j < pose.size(); j++) {
+					Log::Hand("¤¤", pose[i].x, pose[i].y, pose[i].z);
+				}
+			}
+		}
+		else if (SDLK_f == evt.key) {
+			for (int i = 0; i < this->hands.size(); i++)
+				this->hands[i]->SetFreeMoving(!this->hands[i]->IsFreeMoving());
+			Log::Hand("Free Moving Mode : ", this->hands[0]->IsFreeMoving());
+		}
+		else if (SDLK_o == evt.key) {
+			for (int i = 0; i < this->hands.size(); i++)
+				this->hands[i]->Optimization();
+		}
+		else if (SDLK_d == evt.key) {
+			Log::Hand("Difference : ", this->hands[0]->ObjectiveFunction());
+		}
 	}
 	else if (evt.T == EventType::KEY_DOWN) {
 		if (SDLK_0 <= evt.key && evt.key <= SDLK_9) {
@@ -67,25 +98,27 @@ int SimulatorScene::EventProcess(Event& evt) {
 		int x = evt.x;
 		int y = evt.y;
 		for (int i = 0; i < this->hands.size(); i++) {
-			auto joints = this->hands[i]->GetJoints();
-			for (int j = 0; j < joints.size(); j++) {
-				double joint_x, joint_y, joint_z;
-				if (joints[j]->GetParentJoint() == nullptr) continue;
-				joints[j]->GetParentJoint()->GetPosition(joint_x, joint_y, joint_z);
-				if (x > joint_x - 5 && x < joint_x + 5 && y > joint_y - 5 && y < joint_y + 5) {
-					Joint<>* joint = joints[j];
-					if (this->pressed_mouse == MOUSE_LEFT) {
-						if (joint->Type() == JointType::PRIMARY
-							|| joint->Type() == JointType::SECONDARY
-							|| joint->Type() == JointType::TIRTARY)
-							this->MovingFunction = new function<void()>([=]() {joint->SetAngle(this->moving_value, 0, 0); });
+			if (this->hands[i]->IsFreeMoving()) {
+				auto joints = this->hands[i]->GetJoints();
+				for (int j = 0; j < joints.size(); j++) {
+					double joint_x, joint_y, joint_z;
+					if (joints[j]->GetParentJoint() == nullptr) continue;
+					joints[j]->GetParentJoint()->GetPosition(joint_x, joint_y, joint_z);
+					if (x > joint_x - 5 && x < joint_x + 5 && y > joint_y - 5 && y < joint_y + 5) {
+						Joint<>* joint = joints[j];
+						if (this->pressed_mouse == MOUSE_LEFT) {
+							if (joint->Type() == JointType::PRIMARY
+								|| joint->Type() == JointType::SECONDARY
+								|| joint->Type() == JointType::TIRTARY)
+								this->MovingFunction = new function<void()>([=]() {joint->SetAngle(this->moving_value, 0, 0); });
+						}
+						else if (this->pressed_mouse == MOUSE_RIGHT) {
+							if (joint->Type() == JointType::SECONDARY
+								|| joint->Type() == JointType::TIRTARY)
+								this->MovingFunction = new function<void()>([=]() {joint->SetAngle(0, 0, this->moving_value); });
+						}
+						goto ESCAPE;
 					}
-					else if (this->pressed_mouse == MOUSE_RIGHT) {
-						if (joint->Type() == JointType::SECONDARY
-							|| joint->Type() == JointType::TIRTARY)
-							this->MovingFunction = new function<void()>([=]() {joint->SetAngle(0, 0, this->moving_value); });
-					}
-					goto ESCAPE;
 				}
 			}
 		}

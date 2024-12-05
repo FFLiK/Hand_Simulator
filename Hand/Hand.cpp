@@ -42,14 +42,21 @@ Hand* Hand::AddFalseLine(Joint<>* joint1, Joint<>* joint2) {
 }
 
 void Hand::Compute() {
+	if (this->stop_external_call) {
+		this->is_stop_safely = true;
+		return;
+	}
+	this->ComputeInternally();
+}
 
+void Hand::ComputeInternally() {
 	for (int i = 0; i < muscles.size(); i++) {
 		muscles[i]->Compute();
 	}
 
 	Joint<>::NewComputation();
 	for (int i = 0; i < joints.size(); i++) {
-		joints[i]->Compute();
+		joints[i]->Compute(!this->IsFreeMoving());
 	}
 
 	Eigen::Matrix3d rotation_matrix = Calculate::RotationMatrix(this->orientation);
@@ -70,8 +77,8 @@ void Hand::Compute() {
 }
 
 void Hand::Render(SDL_Renderer *renderer, GraphicMode mode) {
+
 	RenderingTool *rendering_tool = RenderingTool::GetInstance();
-	
 
 	double prev_metacarpa_x = 0, prev_metacarpa_y = 0, prev_metacarpa_z = 0;
 	double prev_carpal_x = 0, prev_carpal_y = 0, prev_carpal_z = 0;
@@ -158,6 +165,17 @@ void Hand::SetOrientation(double x, double y, double z) {
 	this->orientation.z += Constant::RAD(z);
 }
 
+void Hand::GetCurrentPose(vector<Vector3D>& args) {
+	args.clear();
+	for (int i = 0; i < this->joints.size(); i++) {
+		if (this->joints[i]->IsEndEffector()) {
+			Vector3D pos;
+			this->joints[i]->GetPosition(pos.x, pos.y, pos.z);
+			args.push_back(pos);
+		}
+	}
+}
+
 void Hand::SetFinalPose(vector<Vector3D> args) {
 	for (int i = 0; i < this->result_function_set.size(); i++) {
 		delete this->result_function_set[i];
@@ -188,69 +206,145 @@ void Hand::SetFinalPose(vector<Vector3D> args) {
 }
 
 void Hand::Optimization() {
-	Log::Hand("Start Optimization . . .");
+	Log::Debug(this->muscles[0]->GetPower());
 
-	double delta = OptimizationParameter::LEARNING_RATE;
+	this->is_stop_safely = false;
+	this->stop_external_call = true;
+	while (!this->is_stop_safely) {
+		// Wait for stopping rendering
+	}
+
+	Log::Hand("Start Optimization . . .");
+	
+	double delta = OptimizationParameter::INFINITESIMAL_CHANGE_FOR_DERIVATIVE;
 	double epsilon = OptimizationParameter::ERROR_THRESHOLD;
+	double mu = OptimizationParameter::DAMPING_CONSTANT;
 	
 	bool optimizing = true;
 	int optimize_step = 0;
 
+	this->is_free_moving = false;
+
 	while (optimizing) {
-		// 1. Jacobian Matrix (Muslcle Forces -> End Effectors (Result Function))
-		Eigen::MatrixXd jacobian_matrix = Eigen::MatrixXd::Zero(this->result_function_set.size(), this->muscles.size());
-
+		Log::Hand("[Optimization]", "Optimizing... (", optimize_step, ")");
+		//! Calculate Gradient
+		Eigen::VectorXd gradient(this->muscles.size());
 		for (int i = 0; i < this->muscles.size(); i++) {
-			for (int j = 0; j < this->result_function_set.size(); j++) {
-				double original = (*this->result_function_set[j])();
+			double original = this->muscles[i]->GetPower();
 
-				this->muscles[i]->SetPower(this->muscles[i]->GetPower() + delta);
-				do this->Compute(); while (!this->IsStable());
-				double changed = (*this->result_function_set[j])();
+			this->muscles[i]->SetPower(original + delta);
+			do this->ComputeInternally(); while (!this->IsStable());
+			double b = this->ObjectiveFunction();
 
-				jacobian_matrix(j, i) = (changed - original) / delta;
+			double minus = this->ObjectiveFunction();
+			this->muscles[i]->SetPower(original);
+			do this->ComputeInternally(); while (!this->IsStable());
+			double a = this->ObjectiveFunction();
 
-				this->muscles[i]->SetPower(this->muscles[i]->GetPower() - delta);
-				do this->Compute(); while (!this->IsStable());
+			gradient(i) = (b - a) / delta;
+		}
+		Log::Hand("[Optimization]", "Gradient Calculated");
+
+		//! Calculate Hessian
+		Eigen::MatrixXd hessian(this->muscles.size(), this->muscles.size());
+		for (int i = 0; i < this->muscles.size(); i++) {
+			for (int j = 0; j < this->muscles.size(); j++) {
+				double original_i = this->muscles[i]->GetPower();
+				double original_j = this->muscles[j]->GetPower();
+
+				this->muscles[i]->SetPower(original_i + delta);
+				this->muscles[j]->SetPower(original_j);
+				do this->ComputeInternally(); while (!this->IsStable());
+				double b = this->ObjectiveFunction();
+
+				this->muscles[i]->SetPower(original_i + delta);
+				this->muscles[j]->SetPower(original_j + delta);
+				do this->ComputeInternally(); while (!this->IsStable());
+				double a = this->ObjectiveFunction();
+
+				this->muscles[i]->SetPower(original_i);
+				this->muscles[j]->SetPower(original_j + delta);
+				do this->ComputeInternally(); while (!this->IsStable());
+				double c = this->ObjectiveFunction();
+
+				this->muscles[i]->SetPower(original_i);
+				this->muscles[j]->SetPower(original_j);
+				do this->ComputeInternally(); while (!this->IsStable());
+				double d = this->ObjectiveFunction();
+
+				hessian(i, j) = (a - b - c + d) / (delta * delta);
 			}
 		}
+		Log::Hand("[Optimization]", "Hessian Calculated");
 
-		// 2. Optimization by Newton-Raphson Method
-		// Newton-Raphson Method: x_{n+1} = x_n - (Jacobian Matrix)^{-1} * f(x_n)
-		Eigen::MatrixXd jacobian_inverse = jacobian_matrix.inverse();
-		Eigen::VectorXd f_vector = Eigen::VectorXd::Zero(this->result_function_set.size());
-		for (int i = 0; i < this->result_function_set.size(); i++) {
-			f_vector(i) = (*this->result_function_set[i])();
-		}
-		Eigen::VectorXd delta_vector = jacobian_inverse * f_vector;
+		//! Calculate Damping Factor
+		Eigen::MatrixXd damping_matrix = mu * Eigen::MatrixXd::Identity(this->muscles.size(), this->muscles.size());
+		
+		Log::Hand("[Optimization]", "Damping Factor Calculated");
 
-		for (int i = 0; i < this->muscles.size(); i++) {
-			this->muscles[i]->SetPower(this->muscles[i]->GetPower() + delta_vector(i));
-		}
+		auto positive_matrix = [](Eigen::MatrixXd matrix)->Eigen::MatrixXd {
+			double epsilon = 1e-6;
+			Eigen::MatrixXd symMatrix = (matrix + matrix.transpose()) / 2;
 
-		do this->Compute(); while (!this->IsStable());
+			Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(symMatrix);
 
-		// 3. Check Result
-		optimizing = false;
-		for (int i = 0; i < this->result_function_set.size(); i++) {
-			if (abs((*this->result_function_set[i])()) > epsilon) {
-				optimizing = true;
-				break;
+			Eigen::VectorXd eigenvalues = solver.eigenvalues();
+			for (int i = 0; i < eigenvalues.size(); ++i) {
+				if (eigenvalues(i) < 0) {
+					eigenvalues(i) = -eigenvalues(i);
+				}
 			}
+
+			Eigen::MatrixXd D = eigenvalues.asDiagonal();
+			Eigen::MatrixXd U = solver.eigenvectors();
+			Eigen::MatrixXd positive_matrix = U * D * U.transpose();
+			return positive_matrix;
+		};
+
+		//! Optimization
+		// by Newton's Method with Damping
+		Eigen::MatrixXd step = (positive_matrix(hessian) + damping_matrix).inverse() * gradient;
+		Log::Debug("Steps");
+		for (int i = 0; i < this->muscles.size(); i++) {
+			double power = this->muscles[i]->GetPower() - step(i);
+			if (power > 1.0) power = 1.0;
+			if (power < 0.0) power = 0.0;
+			this->muscles[i]->SetPower(power);
+		}
+		do this->ComputeInternally(); while (!this->IsStable());
+
+		Log::Debug("Muscle Foreces");
+		for (int i = 0; i < this->muscles.size(); i++) {
+			Log::Debug(i, ":", this->muscles[i]->GetPower());
 		}
 
+		Log::Hand("[Optimization]", "Optimizing (One Step) Completed");
+		Log::Hand("[Optimization]", "Objective Function (x) = ", this->ObjectiveFunction());
+
+		// Print Current Pose
+		vector<Vector3D> current_pose;
+		this->GetCurrentPose(current_pose);
+		Log::Hand("[Optimization]", "Current Pose");
+		for (int i = 0; i < current_pose.size(); i++) {
+			Log::Hand("[Optimization]", "¤¤", current_pose[i].x, current_pose[i].y, current_pose[i].z);
+		}
+
+		// Check Convergence
+		double step_size = step.norm();
+		if (step_size < epsilon) {
+			optimizing = false;
+		}
+		
 		optimize_step++;
 
 		if (optimize_step > OptimizationParameter::OPTIMIZING_LIMIT) {
 			Log::Error("Optimization Failed");
 			break;
 		}
-		else {
-			Log::Debug("Optimization Step: " + to_string(optimize_step) + " / " + to_string(OptimizationParameter::OPTIMIZING_LIMIT) + " (" + to_string(100 * optimize_step / OptimizationParameter::OPTIMIZING_LIMIT) + "%)");
-		}
 	}
 
 	Log::Hand("Finished");
+	this->stop_external_call = false;
 }
 
 bool Hand::IsStable() {
@@ -266,4 +360,20 @@ bool Hand::IsStable() {
 		}
 	}
 	return true;
+}
+
+void Hand::SetFreeMoving(bool is_free_moving) {
+	this->is_free_moving = is_free_moving;
+}
+
+bool Hand::IsFreeMoving() {
+	return this->is_free_moving;
+}
+
+double Hand::ObjectiveFunction() {
+	double result = 0;
+	for (int i = 0; i < this->result_function_set.size(); i++) {
+		result += (*this->result_function_set[i])();
+	}
+	return result / (double)this->result_function_set.size();
 }

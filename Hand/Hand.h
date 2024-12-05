@@ -26,6 +26,12 @@ private:
 	std::vector<Vector3D> previous_joints_position_data;
 	std::vector<Vector3D> current_joints_position_data;
 
+	bool is_free_moving = false;
+	atomic<bool> stop_external_call = false;
+	atomic<bool> is_stop_safely = false;
+
+	void ComputeInternally();
+
 public:
 	Hand();
 	~Hand();
@@ -43,8 +49,14 @@ public:
 	std::vector<function<void()>*> press_motion_function_set;
 	std::vector<function<void()>*> release_motion_function_set;
 
+	void GetCurrentPose(vector<Vector3D>& args);
 	void SetFinalPose(vector<Vector3D> args);
 	void Optimization();
 
 	bool IsStable();
+
+	void SetFreeMoving(bool is_free_moving);
+	bool IsFreeMoving();
+
+	double ObjectiveFunction();
 };
